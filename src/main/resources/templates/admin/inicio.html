@@ -6,7 +6,7 @@
 	<main>
 		<h1>Panel de administración</h1>
 		<section th:each="f : ${festivales}">
-			<h2 th:text="${f.nombre} + ' (' + ${#temporals.format(f.fechaInicio, 'dd/MM')} + ' - ' + ${#temporals.format(f.fechaFin, 'dd/MM/yyyy')} + ')'"></h2>
+			<h2 th:text="${f.nombre} + ' (' + ${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(f.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${f.cantidadDias} + ' días)'"></h2>
 			<p th:if="${f.unidades.isEmpty()}">Sin unidades registradas</p>
 			<table th:unless="${f.unidades.isEmpty()}">
 				<thead><tr><th>Código</th><th>Nombre comercial</th><th>Tipo</th><th>Superficie</th><th>Responsable</th></tr></thead>
