@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Inicio')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1>Festivales</h1>
+		<table>
+			<thead>
+				<tr><th>Nombre</th><th>Temporada</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Unidades</th></tr>
+			</thead>
+			<tbody>
+				<tr th:each="f : ${festivales}">
+					<td th:text="${f.nombre}"></td>
+					<td th:text="${f.temporada}"></td>
+					<td th:text="${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')}"></td>
+					<td th:text="${#temporals.format(f.fechaFin, 'dd/MM/yyyy')}"></td>
+					<td th:text="${f.cantidadDias}"></td>
+					<td th:text="${f.unidades.size()}"></td>
+				</tr>
+			</tbody>
+		</table>
+		<p class="acciones">
+			<a class="boton" th:href="@{/registro}">Registrar unidad de venta</a>
+			<a class="boton" th:href="@{/login}">Iniciar sesión</a>
+		</p>
+	</main>
+</body>
+</html>

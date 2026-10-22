@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Registrar unidad')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main class="angosto">
+		<h1>Registrar unidad de venta</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+		<form th:action="@{/registro}" th:object="${registro}" method="post">
+			<ul class="error" th:if="${#fields.hasErrors('*')}">
+				<li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li>
+			</ul>
+
+			<fieldset>
+				<legend>Responsable</legend>
+				<label>Nombre <input type="text" th:field="*{nombre}" required></label>
+				<label>Apellido <input type="text" th:field="*{apellido}" required></label>
+				<label>DNI <input type="text" th:field="*{dni}" required></label>
+				<label>Email <input type="email" th:field="*{email}" required></label>
+				<label>Fecha de nacimiento <input type="date" th:field="*{fechaNacimiento}" required></label>
+				<label>Usuario <input type="text" th:field="*{username}" required></label>
+				<label>Contraseña <input type="password" th:field="*{password}" required></label>
+			</fieldset>
+
+			<fieldset>
+				<legend>Unidad de venta</legend>
+				<label>Festival
+					<select th:field="*{festivalId}" required>
+						<option value="">-- Elegir --</option>
+						<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"></option>
+					</select>
+				</label>
+				<label>Nombre comercial <input type="text" th:field="*{nombreComercial}" required></label>
+				<label>Código (FT + 8 dígitos para Food Truck, PD + 8 dígitos para Puesto)
+					<input type="text" th:field="*{codigo}" maxlength="10" placeholder="FT00000001" required></label>
+				<label>Superficie (m²) <input type="number" step="0.01" min="0" th:field="*{superficie}" required></label>
+				<label>Tipo
+					<select th:field="*{tipo}" required>
+						<option value="">-- Elegir --</option>
+						<option value="FOOD_TRUCK">Food Truck</option>
+						<option value="PUESTO">Puesto Desarmable</option>
+					</select>
+				</label>
+			</fieldset>
+
+			<fieldset>
+				<legend>Si es Food Truck</legend>
+				<label>Patente <input type="text" th:field="*{patente}"></label>
+				<label class="check"><input type="checkbox" th:field="*{conexionElectrica}"> Requiere conexión eléctrica</label>
+			</fieldset>
+
+			<fieldset>
+				<legend>Si es Puesto Desarmable</legend>
+				<label>Cantidad de carpas <input type="number" min="1" th:field="*{cantCarpas}"></label>
+				<label>Tiempo de armado (min) <input type="number" min="0" th:field="*{tiempoDeArmado}"></label>
+			</fieldset>
+
+			<button type="submit">Registrar</button>
+		</form>
+	</main>
+</body>
+</html>

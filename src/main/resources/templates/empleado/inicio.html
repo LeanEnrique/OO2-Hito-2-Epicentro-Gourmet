@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Mi liquidación')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1 th:text="'Hola, ' + ${empleado.nombreCompleto}"></h1>
+		<p th:text="${empleado.rolLaboral} + ' · Ingreso: ' + ${#temporals.format(empleado.fechaIngreso, 'dd/MM/yyyy')}"></p>
+
+		<h2>Liquidación de sueldo por festival</h2>
+		<p th:if="${liquidaciones.isEmpty()}">Todavía no trabajaste en ningún festival.</p>
+		<table th:unless="${liquidaciones.isEmpty()}">
+			<thead><tr><th>Festival</th><th>Unidad</th><th>Rol</th><th>Días</th><th>Sueldo</th></tr></thead>
+			<tbody>
+				<tr th:each="l : ${liquidaciones}">
+					<td th:text="${l.festival}"></td>
+					<td th:text="${l.unidad}"></td>
+					<td th:text="${l.rol}"></td>
+					<td th:text="${l.diasFestival}"></td>
+					<td th:text="'$ ' + ${#numbers.formatDecimal(l.sueldo, 1, 'POINT', 2, 'COMMA')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

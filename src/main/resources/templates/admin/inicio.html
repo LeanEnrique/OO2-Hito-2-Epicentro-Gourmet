@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Administración')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1>Panel de administración</h1>
+		<section th:each="f : ${festivales}">
+			<h2 th:text="${f.nombre} + ' (' + ${#temporals.format(f.fechaInicio, 'dd/MM')} + ' - ' + ${#temporals.format(f.fechaFin, 'dd/MM/yyyy')} + ')'"></h2>
+			<p th:if="${f.unidades.isEmpty()}">Sin unidades registradas</p>
+			<table th:unless="${f.unidades.isEmpty()}">
+				<thead><tr><th>Código</th><th>Nombre comercial</th><th>Tipo</th><th>Superficie</th><th>Responsable</th></tr></thead>
+				<tbody>
+					<tr th:each="u : ${f.unidades}">
+						<td th:text="${u.codigo}"></td>
+						<td th:text="${u.nombreComercial}"></td>
+						<td th:text="${u.tipo}"></td>
+						<td th:text="${u.superficie} + ' m²'"></td>
+						<td th:text="${u.responsable.nombreCompleto}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
+</html>

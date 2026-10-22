@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titulo)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${titulo} + ' | Epicentro Gourmet'">Epicentro Gourmet</title>
+	<link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+	<header th:fragment="nav">
+		<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
+		<nav>
+			<span sec:authorize="isAnonymous()">
+				<a th:href="@{/registro}">Registrar unidad</a>
+				<a th:href="@{/login}">Iniciar sesión</a>
+			</span>
+			<span sec:authorize="isAuthenticated()">
+				<a th:href="@{/home}">Mi panel</a>
+				<span class="usuario" sec:authentication="name"></span>
+				<form th:action="@{/logout}" method="post" class="inline">
+					<button type="submit">Salir</button>
+				</form>
+			</span>
+		</nav>
+	</header>
+
+	<div th:fragment="mensajes">
+		<p class="ok" th:if="${mensaje}" th:text="${mensaje}"></p>
+		<p class="error" th:if="${error}" th:text="${error}"></p>
+	</div>
+</body>
+</html>

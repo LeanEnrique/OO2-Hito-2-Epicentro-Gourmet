@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Nuevo pedido')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main class="angosto">
+		<h1>Nuevo pedido</h1>
+		<p th:text="'Unidad: ' + ${unidad.nombreComercial} + ' · Fecha: ' + ${#temporals.format(#temporals.createToday(), 'dd/MM/yyyy')}"></p>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<p class="error" th:if="${festivales.isEmpty()}">Tu unidad no participa de ningún festival en curso, no se pueden cargar pedidos hoy.</p>
+		<p class="error" th:if="${platos.isEmpty()}">Tu unidad no tiene platos cargados.</p>
+
+		<form th:unless="${festivales.isEmpty() or platos.isEmpty()}" th:action="@{/responsable/pedidos}" method="post">
+			<label>Festival
+				<select name="festivalId" required>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"></option>
+				</select>
+			</label>
+			<table>
+				<thead><tr><th>Plato</th><th>Precio</th><th>Cantidad</th></tr></thead>
+				<tbody>
+					<tr th:each="p : ${platos}">
+						<td th:text="${p.nombre}"></td>
+						<td th:text="'$ ' + ${#numbers.formatDecimal(p.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+						<td><input type="number" min="0" value="0" th:name="'cant_' + ${p.id}"></td>
+					</tr>
+				</tbody>
+			</table>
+			<button type="submit">Registrar pedido</button>
+			<a th:href="@{/responsable}">Cancelar</a>
+		</form>
+	</main>
+</body>
+</html>

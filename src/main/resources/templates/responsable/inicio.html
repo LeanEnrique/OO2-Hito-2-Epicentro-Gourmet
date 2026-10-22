@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Mi unidad')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1 th:text="${unidad.nombreComercial}"></h1>
+		<p th:text="${unidad.tipo} + ' · ' + ${unidad.codigo} + ' · ' + ${unidad.superficie} + ' m²'"></p>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<h2>Platos</h2>
+		<p th:if="${platos.isEmpty()}">Todavía no hay platos cargados.</p>
+		<table th:unless="${platos.isEmpty()}">
+			<thead><tr><th>Plato</th><th>Precio</th><th>Costo</th></tr></thead>
+			<tbody>
+				<tr th:each="p : ${platos}">
+					<td th:text="${p.nombre}"></td>
+					<td th:text="'$ ' + ${#numbers.formatDecimal(p.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+					<td th:text="'$ ' + ${#numbers.formatDecimal(p.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Pedidos</h2>
+		<p><a class="boton" th:href="@{/responsable/pedidos/nuevo}">Nuevo pedido</a></p>
+		<p th:if="${pedidos.isEmpty()}">Todavía no hay pedidos.</p>
+		<table th:unless="${pedidos.isEmpty()}">
+			<thead><tr><th>#</th><th>Fecha</th><th>Festival</th><th>Detalle</th><th>Total</th></tr></thead>
+			<tbody>
+				<tr th:each="p : ${pedidos}">
+					<td th:text="${p.id}"></td>
+					<td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
+					<td th:text="${p.festival.nombre}"></td>
+					<td>
+						<span th:each="i, st : ${p.items}" th:text="${i.cantidad} + ' x ' + ${i.plato.nombre} + (${st.last} ? '' : ', ')"></span>
+					</td>
+					<td th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>
