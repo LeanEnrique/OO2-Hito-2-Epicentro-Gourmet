@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments :: head('Inicio')}"></head>
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
@@ -20,9 +20,12 @@
 				</tr>
 			</tbody>
 		</table>
-		<p class="acciones">
+		<p class="acciones" sec:authorize="isAnonymous()">
 			<a class="boton" th:href="@{/registro}">Registrar unidad de venta</a>
 			<a class="boton" th:href="@{/login}">Iniciar sesión</a>
+		</p>
+		<p class="acciones" sec:authorize="isAuthenticated()">
+			<a class="boton" th:href="@{/home}">Ir a mi panel</a>
 		</p>
 	</main>
 </body>

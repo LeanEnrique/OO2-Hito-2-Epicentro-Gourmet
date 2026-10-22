@@ -8,6 +8,7 @@
 </head>
 <body>
 	<header th:fragment="nav">
+		<a th:href="@{/}" class="logo"><img th:src="@{/img/logo-unla.png}" alt="Universidad Nacional de Lanús"></a>
 		<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
 		<nav>
 			<span sec:authorize="isAnonymous()">

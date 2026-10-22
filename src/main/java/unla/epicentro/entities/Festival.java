@@ -3,7 +3,7 @@ package unla.epicentro.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import jakarta.persistence.Embedded;
@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OrderBy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,7 +39,8 @@ public class Festival {
 
 	@ManyToMany
 	@JoinTable(name = "festival_unidad", joinColumns = @JoinColumn(name = "festival_id"), inverseJoinColumns = @JoinColumn(name = "unidad_id"))
-	private Set<UnidadDeVenta> unidades = new HashSet<>();
+	@OrderBy("nombreComercial ASC")
+	private Set<UnidadDeVenta> unidades = new LinkedHashSet<>();
 
 	public long getCantidadDias() {
 		return ChronoUnit.DAYS.between(fechaInicio, fechaFin) + 1;

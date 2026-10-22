@@ -9,5 +9,5 @@ import unla.epicentro.entities.UnidadDeVenta;
 
 public interface PlatoRepository extends JpaRepository<Plato, Long> {
 
-	List<Plato> findByUnidadAndActivoTrue(UnidadDeVenta unidad);
+	List<Plato> findByUnidadAndActivoTrueOrderByNombreAsc(UnidadDeVenta unidad);
 }

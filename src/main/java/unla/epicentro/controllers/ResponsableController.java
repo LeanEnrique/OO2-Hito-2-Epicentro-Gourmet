@@ -39,7 +39,7 @@ public class ResponsableController {
 	public String inicio(Principal principal, Model model) {
 		UnidadDeVenta unidad = unidadDe(principal);
 		model.addAttribute("unidad", unidad);
-		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrue(unidad));
+		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrueOrderByNombreAsc(unidad));
 		model.addAttribute("pedidos", pedidoService.pedidosDe(unidad));
 		return "responsable/inicio";
 	}
@@ -49,7 +49,7 @@ public class ResponsableController {
 		UnidadDeVenta unidad = unidadDe(principal);
 		model.addAttribute("unidad", unidad);
 		model.addAttribute("festivales", pedidoService.festivalesActivos(unidad));
-		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrue(unidad));
+		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrueOrderByNombreAsc(unidad));
 		return "responsable/nuevo-pedido";
 	}
 

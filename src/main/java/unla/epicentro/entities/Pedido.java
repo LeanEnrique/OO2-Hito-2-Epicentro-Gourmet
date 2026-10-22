@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +36,7 @@ public class Pedido {
 	private UnidadDeVenta unidad;
 
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+	@OrderBy("id ASC")
 	private List<ItemPlato> items = new ArrayList<>();
 
 	public void agregarItem(Plato plato, int cantidad) {

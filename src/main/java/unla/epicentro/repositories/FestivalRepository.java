@@ -11,5 +11,5 @@ public interface FestivalRepository extends JpaRepository<Festival, Long> {
 
 	List<Festival> findAllByOrderByFechaInicioAsc();
 
-	List<Festival> findByUnidadesContaining(UnidadDeVenta unidad);
+	List<Festival> findByUnidadesContainingOrderByFechaInicioAsc(UnidadDeVenta unidad);
 }

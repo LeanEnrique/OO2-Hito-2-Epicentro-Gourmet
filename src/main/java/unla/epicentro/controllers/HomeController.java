@@ -37,7 +37,10 @@ public class HomeController {
 	}
 
 	@GetMapping("/login")
-	public String login() {
+	public String login(Authentication auth) {
+		if (auth != null) {
+			return "redirect:/home";
+		}
 		return "login";
 	}
 

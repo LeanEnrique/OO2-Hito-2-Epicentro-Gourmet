@@ -1,19 +1,53 @@
-body { font-family: system-ui, sans-serif; margin: 0; background: #f6f6f4; color: #222; }
-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #2d3e50; color: #fff; }
-header a { color: #fff; margin-left: 12px; text-decoration: none; }
-header .marca { font-weight: bold; margin-left: 0; }
-header .usuario { margin-left: 12px; opacity: .8; }
+:root {
+	--bordo: #8e0028;
+	--bordo-oscuro: #6b001e;
+	--negro: #1a1a1a;
+	--gris-borde: #d9d9d9;
+	--fondo: #f7f5f5;
+	--blanco: #fff;
+}
+
+body { font-family: system-ui, sans-serif; margin: 0; background: var(--fondo); color: var(--negro); }
+
+header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 10px 24px; background: var(--bordo); color: var(--blanco); border-bottom: 4px solid var(--negro); }
+header a { color: var(--blanco); text-decoration: none; }
+header .logo { justify-self: start; display: flex; }
+header .logo img { height: 56px; display: block; }
+header .marca { font-size: 1.5rem; font-weight: bold; letter-spacing: .5px; text-align: center; }
+header nav { justify-self: end; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px; }
+header nav > span { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+header nav a:hover { text-decoration: underline; }
+header .usuario { opacity: .85; }
+header form.inline { margin-left: 0; }
+header button { background: var(--blanco); color: var(--bordo); font-weight: bold; }
+header button:hover { background: #f0e1e4; }
+
 main { max-width: 960px; margin: 24px auto; padding: 0 16px; }
 main.angosto { max-width: 560px; }
-table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 16px; }
-th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
-th { background: #e9ecef; }
+h1, h2 { color: var(--bordo); }
+
+table { width: 100%; border-collapse: collapse; background: var(--blanco); margin-bottom: 16px; }
+th, td { padding: 8px; border-bottom: 1px solid var(--gris-borde); text-align: left; }
+th { background: var(--negro); color: var(--blanco); }
+
 form label { display: block; margin-bottom: 10px; }
-form input, form select { display: block; width: 100%; padding: 6px; box-sizing: border-box; }
+form input, form select { display: block; width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #bbb; border-radius: 4px; }
+form input:focus, form select:focus { outline: 2px solid var(--bordo); outline-offset: 0; border-color: var(--bordo); }
 form label.check input { display: inline; width: auto; }
-fieldset { margin-bottom: 16px; border: 1px solid #ccc; background: #fff; }
-button, .boton { padding: 8px 14px; background: #e07a2f; color: #fff; border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+fieldset { margin-bottom: 16px; border: 1px solid var(--gris-borde); border-radius: 4px; background: var(--blanco); }
+legend { color: var(--bordo); font-weight: bold; }
+
+button, .boton { padding: 8px 14px; background: var(--bordo); color: var(--blanco); border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+button:hover, .boton:hover { background: var(--bordo-oscuro); }
 form.inline { display: inline; margin-left: 12px; }
 form.inline button { padding: 4px 10px; }
+
 .ok { color: #1e7b34; }
 .error { color: #b3261e; }
+
+@media (max-width: 640px) {
+	header { grid-template-columns: auto 1fr; padding: 10px 16px; }
+	header .logo img { height: 44px; }
+	header .marca { text-align: left; font-size: 1.2rem; }
+	header nav { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+}

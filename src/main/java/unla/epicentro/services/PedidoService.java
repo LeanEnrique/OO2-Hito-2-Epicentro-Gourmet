@@ -32,7 +32,7 @@ public class PedidoService {
 	// Festivales de la unidad que están en curso hoy (solo en esos se pueden cargar pedidos)
 	public List<Festival> festivalesActivos(UnidadDeVenta unidad) {
 		LocalDate hoy = LocalDate.now();
-		return festivalRepository.findByUnidadesContaining(unidad).stream()
+		return festivalRepository.findByUnidadesContainingOrderByFechaInicioAsc(unidad).stream()
 				.filter(f -> f.estaActivo(hoy))
 				.toList();
 	}
@@ -54,7 +54,7 @@ public class PedidoService {
 		pedido.setFestival(festival);
 		pedido.setUnidad(unidad);
 
-		for (Plato plato : platoRepository.findByUnidadAndActivoTrue(unidad)) {
+		for (Plato plato : platoRepository.findByUnidadAndActivoTrueOrderByNombreAsc(unidad)) {
 			Integer cantidad = cantidades.get(plato.getId());
 			if (cantidad == null || cantidad == 0) {
 				continue;
