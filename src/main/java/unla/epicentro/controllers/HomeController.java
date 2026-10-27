@@ -2,10 +2,25 @@ package unla.epicentro.controllers;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import unla.epicentro.repositories.FestivalRepository;
 
 @Controller
 public class HomeController {
+
+	private final FestivalRepository festivalRepository;
+
+	public HomeController(FestivalRepository festivalRepository) {
+		this.festivalRepository = festivalRepository;
+	}
+
+	@GetMapping("/")
+	public String index(Model model) {
+		model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
+		return "index";
+	}
 
 	@GetMapping("/login")
 	public String login(Authentication auth) {
