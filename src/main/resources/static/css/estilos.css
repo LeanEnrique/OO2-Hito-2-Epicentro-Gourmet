@@ -38,8 +38,11 @@ form label.check input { display: inline; width: auto; }
 fieldset { margin-bottom: 16px; border: 1px solid var(--gris-borde); border-radius: 4px; background: var(--blanco); }
 legend { color: var(--bordo); font-weight: bold; }
 
-button, .boton { padding: 8px 14px; background: var(--bordo); color: var(--blanco); border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-button:hover, .boton:hover { background: var(--bordo-oscuro); }
+button, .boton { font: inherit; padding: 8px 14px; background: var(--bordo); color: var(--blanco); border: 1px solid var(--bordo); border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+button:hover, .boton:hover { background: var(--bordo-oscuro); border-color: var(--bordo-oscuro); }
+.boton.secundario { background: var(--blanco); color: var(--bordo); }
+.boton.secundario:hover { background: #f0e1e4; color: var(--bordo-oscuro); }
+.acciones-form { display: flex; flex-wrap: wrap; gap: 8px; }
 form.inline { display: inline; margin-left: 12px; }
 form.inline button { padding: 4px 10px; }
 
