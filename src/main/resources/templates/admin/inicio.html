@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Administración')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1>Panel de administración</h1>
+		<p th:if="${festivales.isEmpty()}">Todavía no hay festivales cargados.</p>
+
+		<th:block th:unless="${festivales.isEmpty()}">
+			<form th:action="@{/admin}" method="get">
+				<label>Festival
+					<select name="festival" onchange="this.form.submit()">
+						<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+							th:selected="${seleccionado != null and f.id == seleccionado.id}"></option>
+					</select>
+				</label>
+				<noscript><button type="submit">Ver</button></noscript>
+			</form>
+
+			<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
+
+			<section th:if="${seleccionado != null}">
+				<h2 th:text="${seleccionado.nombre}"></h2>
+				<p th:text="${seleccionado.temporada} + ' · ' + ${#temporals.format(seleccionado.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(seleccionado.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${seleccionado.cantidadDias} + ' días · ' + ${seleccionado.unidades.size()} + (${seleccionado.unidades.size() == 1} ? ' unidad' : ' unidades')"></p>
+
+				<h3>Unidades de venta</h3>
+				<p th:if="${seleccionado.unidades.isEmpty()}">Sin unidades registradas.</p>
+				<table th:unless="${seleccionado.unidades.isEmpty()}">
+					<thead><tr><th>Código</th><th>Nombre comercial</th><th>Tipo</th><th>Superficie</th><th>Responsable</th></tr></thead>
+					<tbody>
+						<tr th:each="u : ${seleccionado.unidades}">
+							<td th:text="${u.codigo}"></td>
+							<td th:text="${u.nombreComercial}"></td>
+							<td th:text="${u.tipo}"></td>
+							<td th:text="${u.superficie} + ' m²'"></td>
+							<td th:text="${u.responsable.nombreCompleto}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</th:block>
+	</main>
+</body>
+</html>
