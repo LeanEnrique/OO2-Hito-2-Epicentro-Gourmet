@@ -12,6 +12,7 @@
 		<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
 		<nav>
 			<span sec:authorize="isAnonymous()">
+				<a th:href="@{/registro}">Registrar unidad</a>
 				<a th:href="@{/login}">Iniciar sesión</a>
 			</span>
 			<span sec:authorize="isAuthenticated()">
