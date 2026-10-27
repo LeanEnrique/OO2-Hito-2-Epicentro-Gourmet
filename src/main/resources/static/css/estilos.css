@@ -43,6 +43,12 @@ button:hover, .boton:hover { background: var(--bordo-oscuro); border-color: var(
 .boton.secundario { background: var(--blanco); color: var(--bordo); }
 .boton.secundario:hover { background: #f0e1e4; color: var(--bordo-oscuro); }
 .acciones-form { display: flex; flex-wrap: wrap; gap: 8px; }
+button:disabled, button:disabled:hover { background: #bbb; border-color: #bbb; color: var(--blanco); cursor: not-allowed; }
+
+th.monto, td.monto { text-align: right; white-space: nowrap; }
+tr.subtotal td { font-weight: bold; border-top: 2px solid var(--gris-borde); }
+.nota { font-size: .9rem; color: #555; margin-top: -8px; }
+tr.total td { font-weight: bold; font-size: 1.1rem; color: var(--bordo); border-top: 2px solid var(--negro); }
 form.inline { display: inline; margin-left: 12px; }
 form.inline button { padding: 4px 10px; }
 

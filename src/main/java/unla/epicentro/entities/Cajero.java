@@ -28,9 +28,17 @@ public class Cajero extends Persona {
 	// (sueldo base + años de antigüedad * monto por año) * factor según duración del festival
 	@Override
 	public BigDecimal calcularSueldo(Festival festival) {
-		Costo costos = festival.getCostos();
-		BigDecimal antiguedad = costos.getPorAntiguedad()
+		return festival.getCostos().getSueldoBase().add(calcularAdicional(festival)).multiply(festival.factorLiquidacion());
+	}
+
+	@Override
+	public BigDecimal calcularAdicional(Festival festival) {
+		return festival.getCostos().getPorAntiguedad()
 				.multiply(BigDecimal.valueOf(getAniosAntiguedad(festival.getFechaInicio())));
-		return costos.getSueldoBase().add(antiguedad).multiply(festival.factorLiquidacion());
+	}
+
+	@Override
+	public String getConceptoAdicional(Festival festival) {
+		return "Antigüedad (" + getAniosAntiguedad(festival.getFechaInicio()) + " años)";
 	}
 }
