@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Mi liquidación')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main class="angosto">
+		<h1 th:text="'Hola, ' + ${empleado.nombreCompleto}"></h1>
+		<p th:text="${empleado.rolLaboral} + ' · Ingreso: ' + ${#temporals.format(empleado.fechaIngreso, 'dd/MM/yyyy')}"></p>
+
+		<h2>Liquidación de sueldo</h2>
+		<p th:if="${liquidaciones.isEmpty()}">Todavía no trabajaste en ningún festival.</p>
+
+		<th:block th:unless="${liquidaciones.isEmpty()}">
+			<form th:action="@{/empleado}" method="get">
+				<label>Festival
+					<select name="festival" onchange="this.form.submit()">
+						<option th:each="l : ${liquidaciones}" th:value="${l.festivalId}" th:text="${l.festival}"
+							th:selected="${l.festivalId == (festivalSeleccionado ?: liquidaciones[0].festivalId)}"></option>
+					</select>
+				</label>
+				<noscript><button type="submit">Ver</button></noscript>
+			</form>
+
+			<p class="error" th:if="${detalle == null}">No trabajaste en el festival elegido.</p>
+
+			<section class="detalle" th:if="${detalle != null}">
+				<p th:text="${detalle.unidad} + ' · ' + ${detalle.rol} + ' · ' + ${detalle.diasFestival} + ' días'"></p>
+				<table>
+					<thead><tr><th>Concepto</th><th class="monto">Monto</th></tr></thead>
+					<tbody>
+						<tr>
+							<td>Sueldo base</td>
+							<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(detalle.sueldoBase, 1, 'POINT', 2, 'COMMA')}"></td>
+						</tr>
+						<tr>
+							<td th:text="${detalle.conceptoAdicional}"></td>
+							<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(detalle.adicional, 1, 'POINT', 2, 'COMMA')}"></td>
+						</tr>
+						<tr class="subtotal">
+							<td>Subtotal</td>
+							<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(detalle.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+						</tr>
+						<tr>
+							<td th:text="'Factor por duración (' + ${detalle.diasFestival} + ' días)'"></td>
+							<td class="monto" th:text="'× ' + ${detalle.porcentajeFactor} + '%'"></td>
+						</tr>
+						<tr class="total">
+							<td>Total a cobrar</td>
+							<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(detalle.total, 1, 'POINT', 2, 'COMMA')}"></td>
+						</tr>
+					</tbody>
+				</table>
+				<p class="nota" th:text="${detalle.descripcionFactor}"></p>
+				<p>
+					<button type="button" disabled title="Disponible próximamente">Descargar recibo PDF</button>
+				</p>
+			</section>
+		</th:block>
+	</main>
+</body>
+</html>

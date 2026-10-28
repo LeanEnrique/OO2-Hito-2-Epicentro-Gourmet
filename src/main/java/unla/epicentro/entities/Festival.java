@@ -63,4 +63,19 @@ public class Festival {
 		}
 		return BigDecimal.valueOf(mitades).multiply(new BigDecimal("0.5"));
 	}
+
+	public int getPorcentajeFactor() {
+		return factorLiquidacion().movePointRight(2).intValue();
+	}
+
+	public String getDescripcionFactor() {
+		long dias = getCantidadDias();
+		if (dias <= 15) {
+			return "Los festivales de hasta 15 días se pagan al 50%.";
+		}
+		if (dias <= 30) {
+			return "Los festivales de 16 a 30 días se pagan al 100%.";
+		}
+		return "Los festivales de más de 30 días se pagan 50% por cada 15 días completos, más un 50%.";
+	}
 }

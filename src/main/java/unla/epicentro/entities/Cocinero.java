@@ -30,7 +30,16 @@ public class Cocinero extends Persona {
 	// (sueldo base + plus por categoría) * factor según duración del festival
 	@Override
 	public BigDecimal calcularSueldo(Festival festival) {
-		Costo costos = festival.getCostos();
-		return costos.getSueldoBase().add(costos.plusPorCategoria(categoria)).multiply(festival.factorLiquidacion());
+		return festival.getCostos().getSueldoBase().add(calcularAdicional(festival)).multiply(festival.factorLiquidacion());
+	}
+
+	@Override
+	public BigDecimal calcularAdicional(Festival festival) {
+		return festival.getCostos().plusPorCategoria(categoria);
+	}
+
+	@Override
+	public String getConceptoAdicional(Festival festival) {
+		return "Plus por categoría (" + categoria + ")";
 	}
 }
