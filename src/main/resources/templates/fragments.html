@@ -10,7 +10,18 @@
 	<header th:fragment="nav">
 		<a th:href="@{/}" class="logo"><img th:src="@{/img/logo-unla.png}" alt="Universidad Nacional de Lanús"></a>
 		<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
-		<nav></nav>
+		<nav>
+			<span sec:authorize="isAnonymous()">
+				<a th:href="@{/login}">Iniciar sesión</a>
+			</span>
+			<span sec:authorize="isAuthenticated()">
+				<a th:href="@{/home}">Mi panel</a>
+				<span class="usuario" sec:authentication="name"></span>
+				<form th:action="@{/logout}" method="post" class="inline">
+					<button type="submit">Salir</button>
+				</form>
+			</span>
+		</nav>
 	</header>
 
 	<div th:fragment="mensajes">

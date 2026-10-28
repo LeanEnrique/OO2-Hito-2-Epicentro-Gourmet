@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Iniciar sesión')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main class="angosto">
+		<h1>Iniciar sesión</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+		<p class="error" th:if="${param.error}">Usuario o contraseña incorrectos</p>
+		<p class="ok" th:if="${param.logout}">Sesión cerrada</p>
+		<form th:action="@{/login}" method="post">
+			<label>Usuario <input type="text" name="username" required autofocus></label>
+			<label>Contraseña <input type="password" name="password" required></label>
+			<button type="submit">Ingresar</button>
+		</form>
+	</main>
+</body>
+</html>
