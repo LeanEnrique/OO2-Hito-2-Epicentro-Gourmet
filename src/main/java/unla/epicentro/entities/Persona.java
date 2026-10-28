@@ -65,4 +65,13 @@ public class Persona {
 	public BigDecimal calcularSueldo(Festival festival) {
 		return BigDecimal.ZERO;
 	}
+
+	// Lo que se suma al sueldo base según el rol (antigüedad o plus por categoría)
+	public BigDecimal calcularAdicional(Festival festival) {
+		return BigDecimal.ZERO;
+	}
+
+	public String getConceptoAdicional(Festival festival) {
+		return "Sin adicional";
+	}
 }
