@@ -17,6 +17,9 @@
 			<span sec:authorize="isAuthenticated()">
 				<a th:href="@{/home}">Mi panel</a>
 				<span class="usuario" sec:authentication="name"></span>
+				<span class="chip-rol" sec:authorize="hasRole('ADMINISTRADOR')">Administrador</span>
+				<span class="chip-rol" sec:authorize="hasRole('RESPONSABLE')">Responsable</span>
+				<span class="chip-rol" sec:authorize="hasRole('EMPLEADO')">Empleado</span>
 				<form th:action="@{/logout}" method="post" class="inline">
 					<button type="submit">Salir</button>
 				</form>
