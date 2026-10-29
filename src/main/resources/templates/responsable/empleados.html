@@ -41,6 +41,7 @@
                     <th>Email</th>
                     <th>Rol</th>
                     <th>Fecha de ingreso</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -57,14 +58,25 @@
 
                     <td>
 
-                        <a class="boton" th:href="@{/responsable/empleados/{id}/editar(id=${empleado.id})}">Editar</a>
+                        <span th:text="${empleado.activo ? 'Activo' : 'Dado de baja'}"></span>
+                    </td>
 
-                        <form th:action="@{/responsable/empleados/{id}/baja(id=${empleado.id})}" method="post"
-                            style="display:inline">
+                    <td>
+                        <span th:if="${empleado.activo}">
+                            <a class="boton" th:href="@{/responsable/empleados/{id}/editar(id=${empleado.id})}">Editar</a>
 
-                            <button type="submit" class="boton">Dar de baja</button>
+                            <form th:action="@{/responsable/empleados/{id}/baja(id=${empleado.id})}" method="post"
+                                style="display:inline">
+                                <button type="submit" class="boton">Dar de baja</button>
+                            </form>
+                        </span>
 
-                        </form>
+                        <span th:unless="${empleado.activo}">
+                            <form th:action="@{/responsable/empleados/{id}/reactivar(id=${empleado.id})}" method="post"
+                                style="display:inline">
+                                <button type="submit" class="boton">Reactivar</button>
+                            </form>
+                        </span>
                     </td>
                 </tr>
             </tbody>
