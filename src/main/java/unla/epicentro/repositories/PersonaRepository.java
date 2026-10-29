@@ -24,7 +24,6 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 		from AsignacionPersonal a
 		join a.persona p
 		where a.unidad = :unidad
-		and p.activo = true
 		and type(p) in (Cajero, Cocinero)
 		and (
 			:busqueda = ''
