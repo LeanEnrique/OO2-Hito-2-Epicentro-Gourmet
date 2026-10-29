@@ -7,10 +7,13 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import unla.epicentro.dtos.EmpleadoDTO;
@@ -110,7 +113,7 @@ public class ResponsableController {
 		model.addAttribute("empleadoDTO", new EmpleadoDTO());
 		model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
 
-		return "responsable/empleado-form";
+		return "responsable/form-empleado";
 	}
 
 	@PostMapping("/empleados")
@@ -119,7 +122,7 @@ public class ResponsableController {
 		if (result.hasErrors()) {
 
 			model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
-			return "responsable/empleado-form";
+			return "responsable/form-empleado";
 		}
 
 		try {
@@ -133,7 +136,7 @@ public class ResponsableController {
 			model.addAttribute("error", e.getMessage());
 			model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
 
-			return "responsable/empleado-form";
+			return "responsable/form-empleado";
 		}
 	}
 
@@ -148,7 +151,7 @@ public class ResponsableController {
 			model.addAttribute("empleadoDTO", dto);
 			model.addAttribute("empleadoEditando", true);
 
-			return "responsable/empleado-form";
+			return "responsable/form-empleado";
 
 		} catch (IllegalArgumentException e) {
 
@@ -163,7 +166,7 @@ public class ResponsableController {
 		if (result.hasErrors()) {
 
 			model.addAttribute("empleadoEditando", true);
-			return "responsable/empleado-form";
+			return "responsable/form-empleado";
 		}
 
 		try {
@@ -178,7 +181,7 @@ public class ResponsableController {
 			model.addAttribute("error", e.getMessage());
 			model.addAttribute("empleadoEditando", true);
 
-			return "responsable/empleado-form";
+			return "responsable/form-empleado";
 		}
 	}
 
@@ -233,14 +236,14 @@ public class ResponsableController {
 
 		model.addAttribute("platoDTO", new PlatoDTO());
 
-		return "responsable/plato-form";
+		return "responsable/form-plato";
 	}
 
 	@PostMapping("/platos")
 	public String crearPlato(Principal principal, @Valid @ModelAttribute("platoDTO") PlatoDTO dto, BindingResult result, Model model, RedirectAttributes redirect) {
 
 		if (result.hasErrors()) {
-			return "responsable/plato-form";
+			return "responsable/form-plato";
 		}
 
 		try {
@@ -254,7 +257,7 @@ public class ResponsableController {
 
 			model.addAttribute("error", e.getMessage());
 
-			return "responsable/plato-form";
+			return "responsable/form-plato";
 		}
 	}
 
@@ -274,7 +277,7 @@ public class ResponsableController {
 			model.addAttribute("platoDTO", dto);
 			model.addAttribute("platoEditando", true);
 
-			return "responsable/plato-form";
+			return "responsable/form-plato";
 
 		} catch (IllegalArgumentException e) {
 
@@ -291,7 +294,7 @@ public class ResponsableController {
 
 			model.addAttribute("platoEditando", true);
 
-			return "responsable/plato-form";
+			return "responsable/form-plato";
 		}
 
 		try {
@@ -306,7 +309,7 @@ public class ResponsableController {
 			model.addAttribute("error", e.getMessage());
 			model.addAttribute("platoEditando", true);
 
-			return "responsable/plato-form";
+			return "responsable/form-plato";
 		}
 	}
 
