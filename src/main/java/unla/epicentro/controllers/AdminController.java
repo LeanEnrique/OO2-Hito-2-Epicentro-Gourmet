@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import unla.epicentro.entities.Festival;
+import unla.epicentro.dtos.ReporteVentaDTO;
 import unla.epicentro.repositories.FestivalRepository;
 
 @Controller
@@ -17,9 +18,11 @@ import unla.epicentro.repositories.FestivalRepository;
 public class AdminController {
 
 	private final FestivalRepository festivalRepository;
+	private final ReporteService reporteService;
 
-	public AdminController(FestivalRepository festivalRepository) {
+	public AdminController(FestivalRepository festivalRepository, ReporteService reporteService) {
 		this.festivalRepository = festivalRepository;
+		this.reporteService = reporteService;
 	}
 
 	@GetMapping
@@ -38,4 +41,18 @@ public class AdminController {
 		return festivales.stream().filter(f -> f.estaActivo(hoy)).findFirst()
 				.orElse(festivales.isEmpty() ? null : festivales.get(0));
 	}
+
+	@GetMapping("/recaudacion")
+	public String recaudacion(@RequestParam Long festivalId, Model model) {
+
+    	Festival festival = festivalRepository.findById(festivalId)
+            .orElseThrow(() -> new IllegalArgumentException("Festival no encontrado"));
+
+    ReporteVentaDTO reporte = reporteService.calcularRecaudacion(festival);
+
+    model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
+    model.addAttribute("reporte", reporte);
+
+    return "admin/recaudacion";
+}
 }

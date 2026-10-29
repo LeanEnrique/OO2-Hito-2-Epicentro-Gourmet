@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Empleados')}"></head>
+
+<body>
+
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+
+        <h1>Empleados</h1>
+
+        <div th:replace="~{fragments :: mensajes}"></div>
+
+        <p>
+            <a class="boton" th:href="@{/responsable/empleados/nuevo}">Nuevo empleado</a>
+        </p>
+
+        <form method="get" th:action="@{/responsable/empleados}">
+
+            <label for="busqueda">Buscar empleado</label>
+
+            <input id="busqueda" type="text" name="busqueda" th:value="${busqueda}"
+                placeholder="Nombre, apellido, DNI o email">
+
+            <button type="submit" class="boton">Buscar</button>
+
+            <a class="boton" th:href="@{/responsable/empleados}">Limpiar</a>
+
+        </form>
+
+        <p th:if="${empleados.isEmpty()}">No se encontraron empleados.</p>
+
+        <table th:unless="${empleados.isEmpty()}">
+
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Fecha de ingreso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="empleado : ${empleados}">
+
+                    <td th:text="${empleado.nombreCompleto}"></td>
+                    <td th:text="${empleado.dni}"></td>
+                    <td th:text="${empleado.email}"></td>
+                    <td th:text="${empleado.rolLaboral}"></td>
+                    <td th:text="${#temporals.format(empleado.fechaIngreso, 'dd/MM/yyyy')}"></td>
+
+                    <td>
+
+                        <a class="boton" th:href="@{/responsable/empleados/{id}/editar(id=${empleado.id})}">Editar</a>
+
+                        <form th:action="@{/responsable/empleados/{id}/baja(id=${empleado.id})}" method="post"
+                            style="display:inline">
+
+                            <button type="submit" class="boton">Dar de baja</button>
+
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</body>
+
+</html>
