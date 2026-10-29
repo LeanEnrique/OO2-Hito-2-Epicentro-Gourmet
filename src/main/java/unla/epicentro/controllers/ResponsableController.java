@@ -69,7 +69,7 @@ public class ResponsableController {
 		return "responsable/nuevo-pedido";
 	}
 
-	// Las cantidades llegan como parámetros "cant_<idPlato>"
+	// Las cantidades llegan como parámetros "cant_<id|Plato>"
 	@PostMapping("/pedidos")
 	public String crearPedido(Principal principal, @RequestParam Long festivalId, @RequestParam Map<String, String> params, RedirectAttributes redirect) {
 		try {

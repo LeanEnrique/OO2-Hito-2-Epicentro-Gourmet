@@ -1,13 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-</head>
+<head th:replace="~{fragments :: head('Empleado')}"></head>
 
 <body>
+
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+
+        <h1 th:text="${empleadoEditando == true ? 'Modificar empleado' : 'Nuevo empleado'}"></h1>
+
+        <div th:replace="~{fragments :: mensajes}"></div>
+
+        <form th:object="${empleadoDTO}" th:action="${empleadoEditando == true}
+			? @{/responsable/empleados/{id}(id=${empleadoDTO.id})}
+			: @{/responsable/empleados}" method="post">
+
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" th:field="*{nombre}">
+
+            <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+
+            <label for="apellido">Apellido</label>
+            <input id="apellido" type="text" th:field="*{apellido}">
+
+            <p th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></p>
+
+            <label for="dni">DNI</label>
+            <input id="dni" type="text" th:field="*{dni}">
+
+            <p th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></p>
+
+            <label for="email">Email</label>
+            <input id="email" type="email" th:field="*{email}">
+
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+            <label for="fechaNacimiento">Fecha de nacimiento</label>
+
+            <input id="fechaNacimiento" type="date" th:field="*{fechaNacimiento}">
+
+            <p th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></p>
+
+            <label for="tipo">Tipo de empleado</label>
+
+            <select id="tipo" th:field="*{tipo}" onchange="mostrarCampos()">
+
+                <option value="">Seleccionar</option>
+                <option value="CAJERO">Cajero</option>
+                <option value="COCINERO">Cocinero</option>
+
+            </select>
+
+            <div id="camposCajero">
+
+                <label for="turno">Turno</label>
+
+                <select id="turno" th:field="*{turno}">
+
+                    <option value="">Seleccionar</option>
+                    <option value="MANANA">Mañana</option>
+                    <option value="NOCHE">Noche</option>
+
+                </select>
+
+            </div>
+
+            <div id="camposCocinero">
+
+                <label for="categoria">Categoría</label>
+
+                <select id="categoria" th:field="*{categoria}">
+
+                    <option value="">Seleccionar</option>
+                    <option value="COCINERO">Cocinero</option>
+                    <option value="AYUDANTE">Ayudante</option>
+                    <option value="LAVAPLATOS">Lavaplatos</option>
+
+                </select>
+
+                <label for="especialidad">Especialidad</label>
+
+                <input id="especialidad" type="text" th:field="*{especialidad}">
+
+            </div>
+
+            <div th:if="${empleadoEditando != true}">
+
+                <label for="festivalId">Festival al que será asignado</label>
+
+                <select id="festivalId" th:field="*{festivalId}">
+
+                    <option value="">Seleccionar festival</option>
+
+                    <option th:each="festival : ${festivales}" th:value="${festival.id}" th:text="${festival.nombre + ' (' +
+						#temporals.format(festival.fechaInicio, 'dd/MM/yyyy') +
+						' - ' +
+						#temporals.format(festival.fechaFin, 'dd/MM/yyyy') +
+						')'}">
+                    </option>
+
+                </select>
+
+            </div>
+
+            <p th:if="${empleadoEditando != true}">El usuario y la contraseña se generarán automáticamente y se enviarán
+                al email indicado.</p>
+
+            <button type="submit" class="boton">Guardar</button>
+
+            <a class="boton" th:href="@{/responsable/empleados}">Cancelar</a>
+
+        </form>
+
+    </main>
+
+    <script>
+
+        function mostrarCampos() {
+
+            const tipo = document.getElementById("tipo").value;
+
+            document.getElementById("camposCajero").style.display =
+                tipo === "CAJERO" ? "block" : "none";
+
+            document.getElementById("camposCocinero").style.display =
+                tipo === "COCINERO" ? "block" : "none";
+        }
+
+        mostrarCampos();
+
+    </script>
 
 </body>
 

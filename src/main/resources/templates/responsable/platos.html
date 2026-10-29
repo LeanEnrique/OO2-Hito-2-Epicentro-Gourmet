@@ -1,13 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-</head>
+<head th:replace="~{fragments :: head('Platos')}"></head>
 
 <body>
+
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+
+        <h1>Platos</h1>
+
+        <div th:replace="~{fragments :: mensajes}"></div>
+
+        <p>
+            <a class="boton" th:href="@{/responsable/platos/nuevo}">
+                Nuevo plato
+            </a>
+        </p>
+
+        <form method="get" th:action="@{/responsable/platos}">
+
+            <label for="busqueda">Buscar plato</label>
+            <input id="busqueda" type="text" name="busqueda" th:value="${busqueda}" placeholder="Nombre del plato">
+            <button type="submit" class="boton">Buscar</button>
+            <a class="boton" th:href="@{/responsable/platos}">Limpiar</a>
+
+        </form>
+
+        <p th:if="${platos.isEmpty()}">No se encontraron platos.</p>
+
+        <table th:unless="${platos.isEmpty()}">
+
+            <thead>
+
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Costo</th>
+                    <th>Acciones</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr th:each="plato : ${platos}">
+                    <td th:text="${plato.nombre}"></td>
+                    <td th:text="'$ ' + ${#numbers.formatDecimal(plato.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <td th:text="'$ ' + ${#numbers.formatDecimal(plato.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+
+                    <td>
+                        <a class="boton" th:href="@{/responsable/platos/{id}/editar(id=${plato.id})}">Editar</a>
+
+                        <form th:action="@{/responsable/platos/{id}/baja(id=${plato.id})}" method="post"
+                            style="display:inline">
+
+                            <button type="submit" class="boton">Dar de baja</button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
 
 </body>
 
