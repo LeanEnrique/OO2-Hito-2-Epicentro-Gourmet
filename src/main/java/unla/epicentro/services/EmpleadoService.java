@@ -49,14 +49,15 @@ public class EmpleadoService {
 		this.mailService = mailService;
 	}
 
-	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda) {
+	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda, boolean activo) {
 		if (busqueda == null) {
 			busqueda = "";
 		}
 
 		return personaRepository.buscarEmpleadosDeUnidad(
 				unidad,
-				busqueda.trim());
+				busqueda.trim(),
+				activo);
 	}
 
 	@Transactional

@@ -25,6 +25,7 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 		join a.persona p
 		where a.unidad = :unidad
 		and type(p) in (Cajero, Cocinero)
+		and p.activo = :activo
 		and (
 			:busqueda = ''
 			or lower(p.nombre) like lower(concat('%', :busqueda, '%'))
@@ -36,5 +37,6 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 	""")
 	List<Persona> buscarEmpleadosDeUnidad(
 			@Param("unidad") UnidadDeVenta unidad,
-			@Param("busqueda") String busqueda);
+			@Param("busqueda") String busqueda,
+			@Param("activo") boolean activo);
 }

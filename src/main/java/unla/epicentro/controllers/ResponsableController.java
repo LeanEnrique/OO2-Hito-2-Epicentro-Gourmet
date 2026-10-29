@@ -101,7 +101,10 @@ public class ResponsableController {
 		model.addAttribute("unidad", unidad);
 		model.addAttribute(
 				"empleados",
-				empleadoService.buscar(unidad, busqueda));
+				empleadoService.buscar(unidad, busqueda, true));
+		model.addAttribute(
+				"bajas",
+				empleadoService.buscar(unidad, "", false));
 		model.addAttribute("busqueda", busqueda);
 
 		return "responsable/empleados";
