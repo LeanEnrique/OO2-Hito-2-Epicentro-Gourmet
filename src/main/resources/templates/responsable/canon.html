@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cálculo de Canon</title>
+</head>
+
+<body>
+
+    <h1>Cálculo de Canon</h1>
+
+    <h2 th:text="${festival.nombre}"></h2>
+
+    <p>
+        <strong>Unidad:</strong>
+        <span th:text="${canon.nombreComercial}"></span>
+    </p>
+
+    <p>
+        <strong>Código:</strong>
+        <span th:text="${canon.codigo}"></span>
+    </p>
+
+    <p>
+        <strong>Tipo:</strong>
+        <span th:text="${canon.tipo}"></span>
+    </p>
+
+    <p>
+        <strong>Canon:</strong>
+        $
+        <span th:text="${canon.canon}"></span>
+    </p>
+
+    <a th:href="@{/responsable}">
+        Volver
+    </a>
+
+</body>
+
+</html>
