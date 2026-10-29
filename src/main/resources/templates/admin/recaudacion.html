@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Recaudación</title>
+</head>
+
+<body>
+
+    <h1>Reporte de Recaudación</h1>
+
+    <form th:action="@{/admin/recaudacion}" method="get">
+
+        <label for="festivalId">Festival:</label>
+        <select id="festivalId" name="festivalId" required>
+            <option value="">Seleccionar festival</option>
+            <option th:each="festival : ${festivales}" th:value="${festival.id}" th:text="${festival.nombre}"
+                th:selected="${reporte != null and reporte.festivalId == festival.id}">
+            </option>
+
+        </select>
+
+        <button type="submit">Consultar</button>
+
+    </form>
+
+    <div th:if="${reporte != null}">
+
+        <h2 th:text="${reporte.nombreFestival}"></h2>
+
+        <p><strong>Recaudación total:</strong>
+            $
+            <span th:text="${reporte.recaudacionTotal}"></span>
+        </p>
+
+    </div>
+
+    <a th:href="@{/admin}">Volver</a>
+
+</body>
+
+</html>
