@@ -10,4 +10,10 @@ import unla.epicentro.entities.UnidadDeVenta;
 public interface PlatoRepository extends JpaRepository<Plato, Long> {
 
 	List<Plato> findByUnidadAndActivoTrueOrderByNombreAsc(UnidadDeVenta unidad);
+
+	List<Plato> findByUnidadAndActivoTrueAndNombreContainingIgnoreCaseOrderByNombreAsc(
+			UnidadDeVenta unidad,
+			String nombre);
+
+	Optional<Plato> findByIdAndUnidad(Long id, UnidadDeVenta unidad);
 }
