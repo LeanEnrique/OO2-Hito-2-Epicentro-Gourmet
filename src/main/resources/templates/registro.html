@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments :: head('Registrar unidad')}"></head>
+
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main class="angosto">
@@ -17,7 +19,9 @@
 				<label>Apellido <input type="text" th:field="*{apellido}" required></label>
 				<label>DNI <input type="text" th:field="*{dni}" required></label>
 				<label>Email <input type="email" th:field="*{email}" required></label>
-				<label>Fecha de nacimiento <input type="date" th:field="*{fechaNacimiento}" th:max="${#temporals.format(#temporals.createToday().minusYears(18), 'yyyy-MM-dd')}" title="El responsable debe ser mayor de edad" required></label>
+				<label>Fecha de nacimiento <input type="date" th:field="*{fechaNacimiento}"
+						th:max="${#temporals.format(#temporals.createToday().minusYears(18), 'yyyy-MM-dd')}"
+						title="El responsable debe ser mayor de edad" required></label>
 				<label>Usuario <input type="text" th:field="*{username}" required></label>
 				<label>Contraseña <input type="password" th:field="*{password}" required></label>
 			</fieldset>
@@ -33,7 +37,8 @@
 				<label>Nombre comercial <input type="text" th:field="*{nombreComercial}" required></label>
 				<label>Código (FT + 8 dígitos para Food Truck, PD + 8 dígitos para Puesto)
 					<input type="text" th:field="*{codigo}" maxlength="10" placeholder="FT00000001" required></label>
-				<label>Superficie (m²) <input type="number" step="0.01" min="0" th:field="*{superficie}" required></label>
+				<label>Superficie (m²) <input type="number" step="0.01" min="0" th:field="*{superficie}"
+						required></label>
 				<label>Tipo
 					<select id="tipo" th:field="*{tipo}" required>
 						<option value="">-- Elegir --</option>
@@ -46,13 +51,15 @@
 			<fieldset data-tipo="FOOD_TRUCK" hidden disabled>
 				<legend>Datos del Food Truck</legend>
 				<label>Patente <input type="text" th:field="*{patente}" required></label>
-				<label class="check"><input type="checkbox" th:field="*{conexionElectrica}"> Requiere conexión eléctrica</label>
+				<label class="check"><input type="checkbox" th:field="*{conexionElectrica}"> Requiere conexión
+					eléctrica</label>
 			</fieldset>
 
 			<fieldset data-tipo="PUESTO" hidden disabled>
 				<legend>Datos del Puesto Desarmable</legend>
 				<label>Cantidad de carpas <input type="number" min="1" th:field="*{cantCarpas}" required></label>
-				<label>Tiempo de armado (min) <input type="number" min="0" th:field="*{tiempoDeArmado}" required></label>
+				<label>Tiempo de armado (min) <input type="number" min="0" th:field="*{tiempoDeArmado}"
+						required></label>
 			</fieldset>
 
 			<button type="submit">Registrar</button>
@@ -72,4 +79,5 @@
 		mostrarCamposDelTipo();
 	</script>
 </body>
+
 </html>

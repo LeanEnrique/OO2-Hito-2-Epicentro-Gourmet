@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Plato')}"></head>
+
+<body>
+
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+
+        <h1 th:text="${platoEditando == true ? 'Modificar plato' : 'Nuevo plato'}"></h1>
+
+        <div th:replace="~{fragments :: mensajes}"></div>
+
+        <form th:object="${platoDTO}" th:action="${platoEditando == true}
+			? @{/responsable/platos/{id}(id=${platoDTO.id})}
+			: @{/responsable/platos}" method="POST">
+
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" th:field="*{nombre}">
+            <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+
+            <label for="precio">Precio</label>
+            <input id="precio" type="number" step="0.01" min="0.01" th:field="*{precio}">
+            <p th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></p>
+
+            <label for="costo">Costo</label>
+            <input id="costo" type="number" step="0.01" min="0.01" th:field="*{costo}">
+            <p th:if="${#fields.hasErrors('costo')}" th:errors="*{costo}"></p>
+
+            <button type="submit" class="boton">Guardar</button>
+            <a class="boton" th:href="@{/responsable/platos}">Cancelar</a>
+
+        </form>
+
+    </main>
+
+</body>
+
+</html>
