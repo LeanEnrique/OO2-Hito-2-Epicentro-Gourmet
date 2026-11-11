@@ -50,6 +50,14 @@ public class Festival {
 		return !fecha.isBefore(fechaInicio) && !fecha.isAfter(fechaFin);
 	}
 
+	public String getEstado() {
+		LocalDate hoy = LocalDate.now();
+		if (fechaFin.isBefore(hoy)) {
+			return "Finalizado";
+		}
+		return estaActivo(hoy) ? "En curso" : "Próximo";
+	}
+
 	// Hasta 15 días 50%, de 16 a 30 100%, más de 30: (int(dias/15) + 1) * 50%
 	public BigDecimal factorLiquidacion() {
 		long dias = getCantidadDias();

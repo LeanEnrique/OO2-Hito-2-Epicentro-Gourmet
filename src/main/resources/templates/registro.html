@@ -28,12 +28,6 @@
 
 			<fieldset>
 				<legend>Unidad de venta</legend>
-				<label>Festival
-					<select th:field="*{festivalId}" required>
-						<option value="">-- Elegir --</option>
-						<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"></option>
-					</select>
-				</label>
 				<label>Nombre comercial <input type="text" th:field="*{nombreComercial}" required></label>
 				<label>Código (FT + 8 dígitos para Food Truck, PD + 8 dígitos para Puesto)
 					<input type="text" th:field="*{codigo}" maxlength="10" placeholder="FT00000001" required></label>

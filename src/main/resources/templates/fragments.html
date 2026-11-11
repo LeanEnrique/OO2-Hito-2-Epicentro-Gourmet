@@ -35,6 +35,9 @@
 		</nav>
 	</header>
 
+	<span th:fragment="estadoFestival(f)" class="estado"
+		th:classappend="${f.estado == 'En curso'} ? 'en-curso' : (${f.estado == 'Finalizado'} ? 'finalizado' : '')"
+		th:text="${f.estado}"></span>
 	<div th:fragment="mensajes">
 		<p class="ok" th:if="${mensaje}" th:text="${mensaje}"></p>
 		<p class="error" th:if="${error}" th:text="${error}"></p>

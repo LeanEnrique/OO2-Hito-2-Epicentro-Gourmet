@@ -8,6 +8,32 @@
 		<p th:text="${unidad.tipo} + ' · ' + ${unidad.codigo} + ' · ' + ${unidad.superficie} + ' m²'"></p>
 		<div th:replace="~{fragments :: mensajes}"></div>
 
+		<h2>Mis festivales</h2>
+		<p th:if="${misFestivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival. Inscribila en uno para poder cargar pedidos.</p>
+		<table th:unless="${misFestivales.isEmpty()}">
+			<thead><tr><th>Festival</th><th>Fechas</th><th>Estado</th><th></th></tr></thead>
+			<tbody>
+				<tr th:each="f : ${misFestivales}">
+					<td th:text="${f.nombre}"></td>
+					<td th:text="${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(f.fechaFin, 'dd/MM/yyyy')}"></td>
+					<td><span th:replace="~{fragments :: estadoFestival(${f})}"></span></td>
+					<td class="monto"><a class="boton secundario" th:href="@{/responsable/festivales/{id}(id=${f.id})}">Ver detalle</a></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Inscribirse a festival</h2>
+		<p th:if="${festivalesDisponibles.isEmpty()}">No hay festivales disponibles para inscribirse.</p>
+		<form th:unless="${festivalesDisponibles.isEmpty()}" th:action="@{/responsable/festivales}" method="post" class="en-linea">
+			<label>Festival
+				<select name="festivalId" required>
+					<option th:each="f : ${festivalesDisponibles}" th:value="${f.id}"
+						th:text="${f.nombre} + ' (' + ${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(f.fechaFin, 'dd/MM/yyyy')} + ')'"></option>
+				</select>
+			</label>
+			<button type="submit">Inscribirse</button>
+		</form>
+
 		<h2>Platos</h2>
 		<p th:if="${platos.isEmpty()}">Todavía no hay platos cargados.</p>
 		<table th:unless="${platos.isEmpty()}">
@@ -21,23 +47,6 @@
 			</tbody>
 		</table>
 
-		<h2>Pedidos</h2>
-		<p><a class="boton" th:href="@{/responsable/pedidos/nuevo}">Nuevo pedido</a></p>
-		<p th:if="${pedidos.isEmpty()}">Todavía no hay pedidos.</p>
-		<table th:unless="${pedidos.isEmpty()}">
-			<thead><tr><th>#</th><th>Fecha</th><th>Festival</th><th>Detalle</th><th>Total</th></tr></thead>
-			<tbody>
-				<tr th:each="p : ${pedidos}">
-					<td th:text="${p.id}"></td>
-					<td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
-					<td th:text="${p.festival.nombre}"></td>
-					<td>
-						<span th:each="i, st : ${p.items}" th:text="${i.cantidad} + ' x ' + ${i.plato.nombre} + (${st.last} ? '' : ', ')"></span>
-					</td>
-					<td th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}"></td>
-				</tr>
-			</tbody>
-		</table>
 	</main>
 </body>
 </html>

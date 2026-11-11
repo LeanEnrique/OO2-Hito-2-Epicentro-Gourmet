@@ -7,14 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import unla.epicentro.dtos.RegistroUnidadDTO;
-import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.FoodTruck;
 import unla.epicentro.entities.Persona;
 import unla.epicentro.entities.PuestoDesarmable;
 import unla.epicentro.entities.Rol;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Usuario;
-import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.repositories.PersonaRepository;
 import unla.epicentro.repositories.UnidadDeVentaRepository;
 import unla.epicentro.repositories.UsuarioRepository;
@@ -25,16 +23,13 @@ public class RegistroService {
 	private final PersonaRepository personaRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final UnidadDeVentaRepository unidadRepository;
-	private final FestivalRepository festivalRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public RegistroService(PersonaRepository personaRepository, UsuarioRepository usuarioRepository,
-			UnidadDeVentaRepository unidadRepository, FestivalRepository festivalRepository,
-			PasswordEncoder passwordEncoder) {
+			UnidadDeVentaRepository unidadRepository, PasswordEncoder passwordEncoder) {
 		this.personaRepository = personaRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.unidadRepository = unidadRepository;
-		this.festivalRepository = festivalRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -51,11 +46,6 @@ public class RegistroService {
 		}
 		if (unidadRepository.existsByCodigo(dto.getCodigo())) {
 			throw new IllegalArgumentException("Ya existe una unidad con el código " + dto.getCodigo());
-		}
-		Festival festival = festivalRepository.findById(dto.getFestivalId())
-				.orElseThrow(() -> new IllegalArgumentException("El festival no existe"));
-		if (festival.getFechaFin().isBefore(LocalDate.now())) {
-			throw new IllegalArgumentException("No se puede registrar una unidad en un festival que ya terminó");
 		}
 
 		Persona responsable = new Persona();
@@ -88,7 +78,6 @@ public class RegistroService {
 		personaRepository.save(responsable);
 		unidadRepository.save(unidad);
 		usuarioRepository.save(usuario);
-		festival.getUnidades().add(unidad);
 		return unidad;
 	}
 

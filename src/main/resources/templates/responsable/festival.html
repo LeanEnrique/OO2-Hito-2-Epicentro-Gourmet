@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${festival.nombre})}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable}">← Volver a mi unidad</a></p>
+		<h1 th:text="${festival.nombre}"></h1>
+		<p>
+			<span th:text="${festival.temporada} + ' · ' + ${#temporals.format(festival.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(festival.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${festival.cantidadDias} + ' días'"></span>
+			<span th:replace="~{fragments :: estadoFestival(${festival})}"></span>
+		</p>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<h2>Pedidos</h2>
+		<p th:text="${pedidos.size()} + (${pedidos.size() == 1} ? ' pedido' : ' pedidos') + ' · Recaudación: $ ' + ${#numbers.formatDecimal(recaudacion, 1, 'POINT', 2, 'COMMA')}"></p>
+		<p th:if="${festival.estado == 'En curso'}"><a class="boton" th:href="@{/responsable/pedidos/nuevo}">Nuevo pedido</a></p>
+		<p th:if="${pedidos.isEmpty()}">Todavía no hay pedidos en este festival.</p>
+		<table th:unless="${pedidos.isEmpty()}">
+			<thead><tr><th>#</th><th>Fecha</th><th>Detalle</th><th class="monto">Total</th></tr></thead>
+			<tbody>
+				<tr th:each="p : ${pedidos}">
+					<td th:text="${p.id}"></td>
+					<td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
+					<td>
+						<span th:each="i, st : ${p.items}" th:text="${i.cantidad} + ' x ' + ${i.plato.nombre} + (${st.last} ? '' : ', ')"></span>
+					</td>
+					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>
