@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Plato estrella')}"></head>
+
+<body>
+
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+
+        <h1>Plato estrella</h1>
+
+        <p>
+            Consultá cuál fue el plato más vendido
+            de una unidad durante un festival.
+        </p>
+
+        <form th:action="@{/admin/plato-estrella}" method="get">
+
+            <label for="festivalId">Festival</label>
+
+            <select id="festivalId" name="festivalId" required onchange="this.form.submit()">
+
+                <option value="">Seleccionar festival</option>
+
+                <option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}" th:selected="${festivalSeleccionado != null
+                            and f.id == festivalSeleccionado.id}">
+                </option>
+
+            </select>
+
+            <div th:if="${festivalSeleccionado != null}">
+
+                <label for="unidadId">Unidad de venta</label>
+
+                <select id="unidadId" name="unidadId" required>
+
+                    <option value="">Seleccionar unidad</option>
+
+                    <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.nombreComercial}">
+                    </option>
+
+                </select>
+
+                <button type="submit">Consultar</button>
+
+            </div>
+
+        </form>
+
+        <p class="error" th:if="${error != null}" th:text="${error}"></p>
+
+        <section th:if="${platoEstrella != null}">
+
+            <h2>Plato más vendido</h2>
+
+            <p>
+                Nombre:
+                <strong th:text="${platoEstrella.nombre}"></strong>
+            </p>
+
+            <p>
+                Precio:
+                <strong th:text="'$ ' + ${platoEstrella.precio}"></strong>
+            </p>
+
+            <p>
+                Costo:
+                <strong th:text="'$ ' + ${platoEstrella.costo}"></strong>
+            </p>
+
+        </section>
+
+        <p th:if="${unidadId != null and platoEstrella == null
+            and error == null}">
+            No hay pedidos registrados para esta unidad y festival.
+        </p>
+
+        <a th:href="@{/admin}">Volver al panel</a>
+
+    </main>
+
+</body>
+
+</html>

@@ -11,6 +11,10 @@
 		<a th:href="@{/admin/rentabilidad}">
 			Consultar rentabilidad neta
 		</a>
+		<br />
+		<a th:href="@{/admin/plato-estrella}">
+			Consultar plato estrella
+		</a>
 		<p th:if="${festivales.isEmpty()}">Todavía no hay festivales cargados.</p>
 
 		<th:block th:unless="${festivales.isEmpty()}">
