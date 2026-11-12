@@ -87,22 +87,12 @@
             </div>
 
             <div th:if="${empleadoEditando != true}">
-
-                <label for="festivalId">Festival al que será asignado</label>
-
-                <select id="festivalId" th:field="*{festivalId}">
-
-                    <option value="">Seleccionar festival</option>
-
-                    <option th:each="festival : ${festivales}" th:value="${festival.id}" th:text="${festival.nombre + ' (' +
-						#temporals.format(festival.fechaInicio, 'dd/MM/yyyy') +
-						' - ' +
-						#temporals.format(festival.fechaFin, 'dd/MM/yyyy') +
-						')'}">
-                    </option>
-
-                </select>
-
+                <p th:if="${festivales.isEmpty()}" class="error">Tu unidad no está inscripta en ningún festival vigente. Inscribila en uno antes de dar de alta empleados.</p>
+                <p th:unless="${festivales.isEmpty()}">
+                    Va a trabajar en los festivales de tu unidad:
+                    <strong th:text="${#strings.listJoin(festivales.![nombre], ', ')}"></strong>.
+                    Si la unidad se inscribe a otro festival, el empleado se suma automáticamente.
+                </p>
             </div>
 
             <p th:if="${empleadoEditando != true}">El usuario y la contraseña se generarán automáticamente y se enviarán

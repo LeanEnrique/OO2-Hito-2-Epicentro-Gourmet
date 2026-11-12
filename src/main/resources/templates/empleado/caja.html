@@ -8,7 +8,7 @@
 		<h1>Cerrar caja</h1>
 		<div th:replace="~{fragments :: mensajes}"></div>
 
-		<p th:text="${cajero.nombreCompleto} + ' · Turno ' + ${cajero.turno}"></p>
+		<p th:text="${cajero.nombreCompleto} + ' · Turno ' + ${cajero.turno.descripcion}"></p>
 
 		<p class="error" th:if="${asignacion == null}">
 			Hoy no tenés un festival activo asignado, así que no podés abrir la caja.
@@ -78,7 +78,7 @@
 			<tbody>
 				<tr th:each="c : ${historial}">
 					<td th:text="${#temporals.format(c.fecha, 'dd/MM/yyyy')}"></td>
-					<td th:text="${c.turno}"></td>
+					<td th:text="${c.turno.descripcion}"></td>
 					<td th:text="${c.unidad.nombreComercial}"></td>
 					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.montoInicial, 1, 'POINT', 2, 'COMMA')}"></td>
 					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></td>

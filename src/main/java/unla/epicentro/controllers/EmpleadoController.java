@@ -101,7 +101,8 @@ public class EmpleadoController {
 			AsignacionPersonal asignacion = asignacionService.actual(cajero)
 					.orElseThrow(() -> new IllegalArgumentException("Hoy no tenés un festival activo asignado"));
 			cajaService.abrir(cajero, asignacion, montoInicial);
-			redirect.addFlashAttribute("mensaje", "Caja abierta para el turno " + cajero.getTurno() + ".");
+			redirect.addFlashAttribute("mensaje",
+					"Caja abierta para el turno " + cajero.getTurno().getDescripcion() + ".");
 		} catch (IllegalArgumentException e) {
 			redirect.addFlashAttribute("error", e.getMessage());
 		}

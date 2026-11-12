@@ -21,4 +21,8 @@ public interface AsignacionPersonalRepository extends JpaRepository<AsignacionPe
 			unla.epicentro.entities.Festival festival);
 
 	List<AsignacionPersonal> findByFestivalAndUnidad(Festival festival, UnidadDeVenta unidad);
+
+	List<AsignacionPersonal> findByUnidadOrderByFestivalFechaInicioAsc(UnidadDeVenta unidad);
+
+	boolean existsByPersonaAndFestival(Persona persona, Festival festival);
 }

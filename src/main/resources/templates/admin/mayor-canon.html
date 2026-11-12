@@ -4,24 +4,26 @@
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main>
-		<p><a class="boton secundario" th:href="@{/admin(festival=${seleccionado?.id})}">← Volver al panel</a></p>
 		<h1>Unidades con mayor canon</h1>
 
-		<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
+		<form th:action="@{/admin/mayor-canon}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festival">
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${seleccionado != null and f.id == seleccionado.id}"></option>
+				</select>
+			</label>
+			<label class="corto">Cantidad de unidades
+				<input type="number" name="x" min="1" th:value="${x}" required>
+			</label>
+			<button type="submit">Consultar</button>
+		</form>
 
-		<th:block th:if="${seleccionado != null}">
-			<h2 th:text="${seleccionado.nombre}"></h2>
-			<form th:action="@{/admin/mayor-canon}" method="get" class="en-linea">
-				<input type="hidden" name="festival" th:value="${seleccionado.id}">
-				<label class="corto">Cantidad de unidades
-					<input type="number" name="x" min="1" th:value="${x}" required>
-				</label>
-				<button type="submit">Consultar</button>
-			</form>
-		</th:block>
+		<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
 		<p class="error" th:if="${error}" th:text="${error}"></p>
 
 		<section th:if="${mayoresCanon != null}">
+			<h2 th:text="${seleccionado.nombre}"></h2>
 			<p th:if="${mayoresCanon.isEmpty()}">No hay unidades en este festival.</p>
 			<table th:unless="${mayoresCanon.isEmpty()}">
 				<thead>

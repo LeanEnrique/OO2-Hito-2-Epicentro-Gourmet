@@ -22,7 +22,7 @@ public class Cajero extends Persona {
 
 	@Override
 	public String getRolLaboral() {
-		return "Cajero (" + turno + ")";
+		return "Cajero (" + turno.getDescripcion() + ")";
 	}
 
 	// (sueldo base + años de antigüedad * monto por año) * factor según duración del festival

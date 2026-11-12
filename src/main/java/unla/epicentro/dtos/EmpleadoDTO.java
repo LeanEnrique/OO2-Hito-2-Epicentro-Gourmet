@@ -43,8 +43,6 @@ public class EmpleadoDTO {
 
 	private String especialidad;
 
-	private Long festivalId;
-
 	public Long getId() {
 		return id;
 	}
@@ -123,13 +121,5 @@ public class EmpleadoDTO {
 
 	public void setEspecialidad(String especialidad) {
 		this.especialidad = especialidad;
-	}
-
-	public Long getFestivalId() {
-		return festivalId;
-	}
-
-	public void setFestivalId(Long festivalId) {
-		this.festivalId = festivalId;
 	}
 }

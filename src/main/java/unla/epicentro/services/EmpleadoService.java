@@ -2,6 +2,8 @@ package unla.epicentro.services;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -104,29 +106,9 @@ public class EmpleadoService {
 
 		validarDatos(dto, null);
 
-		if (dto.getFestivalId() == null) {
-			throw new IllegalArgumentException("Debe seleccionar un festival");
-		}
-
-		Festival festival = festivalRepository.findById(dto.getFestivalId())
-				.orElseThrow(() -> new IllegalArgumentException("El festival no existe"));
-
-		if (!festival.isPeriodoValido()) {
-			throw new IllegalArgumentException("El período del festival " + festival.getNombre()
-					+ " no es válido: la fecha de fin no puede ser anterior a la de inicio");
-		}
-
-		// Validación de carga: el empleado se asigna a un festival en el que la unidad está habilitada
-		boolean unidadHabilitada = festival.getUnidades().stream()
-				.anyMatch(u -> u.getId().equals(unidad.getId()));
-		if (!unidadHabilitada) {
-			throw new IllegalArgumentException(
-					"Tu unidad de venta no está habilitada en el festival " + festival.getNombre()
-							+ ". Inscribila primero.");
-		}
-
-		if (festival.getFechaFin().isBefore(LocalDate.now())) {
-			throw new IllegalArgumentException("No se puede asignar un empleado a un festival que ya terminó");
+		// El empleado trabaja en los festivales vigentes de su unidad: tiene que haber al menos uno
+		if (festivalesVigentes(unidad).isEmpty()) {
+			throw new IllegalArgumentException("Inscribí tu unidad en un festival antes de dar de alta empleados");
 		}
 
 		Persona empleado = crearPersona(dto);
@@ -148,12 +130,7 @@ public class EmpleadoService {
 
 		usuarioRepository.save(usuario);
 
-		AsignacionPersonal asignacion = new AsignacionPersonal();
-		asignacion.setPersona(empleado);
-		asignacion.setFestival(festival);
-		asignacion.setUnidad(unidad);
-
-		asignacionRepository.save(asignacion);
+		asignarAFestivalesVigentes(empleado, unidad);
 
 		boolean enviado = enviarDatosAcceso(empleado, username, password);
 
@@ -196,6 +173,47 @@ public class EmpleadoService {
 		}
 	}
 
+	// Festivales de la unidad que todavía no terminaron
+	private List<Festival> festivalesVigentes(UnidadDeVenta unidad) {
+		LocalDate hoy = LocalDate.now();
+		return festivalRepository.findByUnidadesContainingOrderByFechaInicioAsc(unidad).stream()
+				.filter(f -> !f.getFechaFin().isBefore(hoy))
+				.toList();
+	}
+
+	// El empleado pertenece a la unidad y trabaja en todos sus festivales vigentes
+	private void asignarAFestivalesVigentes(Persona empleado, UnidadDeVenta unidad) {
+		for (Festival festival : festivalesVigentes(unidad)) {
+			asignar(empleado, unidad, festival);
+		}
+	}
+
+	// Cuando la unidad se inscribe a un festival, todo su personal activo pasa a trabajar en él
+	@Transactional
+	public void sumarPersonalAFestival(UnidadDeVenta unidad, Festival festival) {
+		for (Persona empleado : personaRepository.buscarEmpleadosDeUnidad(unidad, "", true)) {
+			asignar(empleado, unidad, festival);
+		}
+	}
+
+	private void asignar(Persona empleado, UnidadDeVenta unidad, Festival festival) {
+		if (asignacionRepository.existsByPersonaAndFestival(empleado, festival)) {
+			return;
+		}
+		AsignacionPersonal asignacion = new AsignacionPersonal();
+		asignacion.setPersona(empleado);
+		asignacion.setFestival(festival);
+		asignacion.setUnidad(unidad);
+		asignacionRepository.save(asignacion);
+	}
+
+	// Festivales en los que trabaja cada empleado de la unidad (id del empleado -> festivales)
+	public Map<Long, List<Festival>> festivalesPorEmpleado(UnidadDeVenta unidad) {
+		return asignacionRepository.findByUnidadOrderByFestivalFechaInicioAsc(unidad).stream()
+				.collect(Collectors.groupingBy(a -> a.getPersona().getId(),
+						Collectors.mapping(AsignacionPersonal::getFestival, Collectors.toList())));
+	}
+
 	@Transactional
 	public void darDeBaja(Long id, UnidadDeVenta unidad) {
 
@@ -223,6 +241,7 @@ public class EmpleadoService {
 
 		empleado.setActivo(true);
 		personaRepository.save(empleado);
+		asignarAFestivalesVigentes(empleado, unidad);
 
 		Usuario usuario = usuarioRepository.findByPersona(empleado)
 				.orElseThrow(() -> new IllegalStateException("El empleado no tiene usuario asociado"));

@@ -10,7 +10,7 @@ Trabajo Práctico Grupal 2026 — Licenciatura en Sistemas, Orientación a Objet
 ## 1. Datos del grupo
 
 - **Número de grupo:** _(completar)_
-- **Repositorio:** https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet
+- **Repositorio:** https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet
 - **Diagrama de clases:** [docs/diagrama-clases.md](docs/diagrama-clases.md)
 - **Listado de casos de uso:** [docs/casos-de-uso.md](docs/casos-de-uso.md)
 
@@ -94,11 +94,11 @@ Luego abrir <http://localhost:8080>.
 [`src/main/resources/data.sql`](src/main/resources/data.sql) corre automáticamente en cada arranque
 (`spring.sql.init.mode=always` + `INSERT IGNORE`, así que no duplica) y carga:
 
-- 3 festivales con todos sus costos (uno finalizado, uno **en curso hoy** y uno futuro)
+- festivales con todos sus costos (uno finalizado, uno **en curso hoy** y uno futuro)
 - usuarios de los **tres roles**
-- 2 unidades de venta con su responsable
-- 6 platos y el personal asignado a cada unidad
-- 5 pedidos con sus ítems (precio y costo históricos)
+- unidades de venta con su responsable
+- platos y el personal asignado a cada unidad
+- pedidos con sus ítems (precio y costo históricos)
 
 **Contraseña de todos los usuarios de prueba: `1234`**
 
@@ -119,36 +119,36 @@ Cada caso de uso se desarrolló en su rama `CU<Funcionalidad><Integrante>` y se 
 
 | # | Caso de uso | Actor | Responsable | Pull Request |
 |---|---|---|---|---|
-| 1 | Estructura base del proyecto, seguridad y login por roles | Todos | Leandro Enrique | [#1](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/1) |
+| 1 | Estructura base del proyecto, seguridad y login por roles | Todos | Leandro Enrique | [#1](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/1) |
 | 2 | Página de inicio con el listado de festivales | Público | Leandro Enrique | rama `CUPaginaInicioLeandroEnrique` |
 | 3 | Registro de unidad de venta con su responsable (+ mail de bienvenida) | Público | Leandro Enrique | rama `CURegistroUnidadLeandroEnrique` |
-| 4 | Ver festivales y sus unidades de venta (panel de administración) | Administrador | Leandro Enrique | [#7](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/7) |
+| 4 | Ver festivales y sus unidades de venta (panel de administración) | Administrador | Leandro Enrique | [#7](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/7) |
 | 5 | Alta de pedido del responsable para su unidad | Responsable | Leandro Enrique | rama `CUAltaPedidoLeandroEnrique` |
 | 6 | Liquidación de haberes con detalle del cálculo | Empleado | Leandro Enrique | rama `CULiquidacionSueldoLeandroEnrique` |
-| 7 | Descarga del recibo de sueldo en PDF | Empleado | Leandro Enrique | [#11](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/11) |
-| 8 | Ver festival y unidad actual en la que trabaja + historial | Empleado | Leandro Enrique | [#16](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/16) |
-| 9 | Ranking de unidades por recaudación | Administrador | Leandro Enrique | [#17](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/17) |
-| 10 | ABM de empleados y platos (baja lógica y reactivación) | Responsable | Santiago Saavedra | [#8](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/8) |
-| 11 | Cálculo de canon por unidad | Responsable | Santiago Saavedra | [#9](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/9) |
-| 12 | Unidades con mayor canon (`ReporteMayoresCanonDTO`) | Administrador | Santiago Saavedra | [#9](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/9) |
-| 13 | Reporte de recaudación de un festival (`ReporteVentaDTO`) | Administrador | Santiago Saavedra | [#13](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/13) |
-| 14 | Cálculo de rentabilidad neta | Administrador | Santiago Saavedra | [#14](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
-| 15 | Rentabilidad neta entre dos fechas | Administrador | Santiago Saavedra | [#14](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
-| 16 | Plato estrella (`PlatoDTO`) | Administrador | Santiago Saavedra | [#15](https://github.com/haruita/OO2-Hito-2-Epicentro-Gourmet/pull/15) |
-| 17 | **Cerrar caja del día (Cajero)** | Empleado | Yamil Miño | ver sección 5 |
-| 18 | **Reportes del responsable sobre su unidad** (recaudación, rentabilidad, fechas, plato estrella) | Responsable | Yamil Miño | ver sección 5 |
-| 19 | **Liquidación de haberes del personal de la unidad** | Responsable | Yamil Miño | ver sección 5 |
-| 20 | **Filtros combinados de empleados** (tipo, turno, categoría) | Responsable | Yamil Miño | ver sección 5 |
+| 7 | Descarga del recibo de sueldo en PDF | Empleado | Leandro Enrique | [#11](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/11) |
+| 8 | Ver festival y unidad actual en la que trabaja + historial | Empleado | Leandro Enrique | [#16](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/16) |
+| 9 | Ranking de unidades por recaudación | Administrador | Leandro Enrique | [#17](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/17) |
+| 10 | ABM de empleados y platos (baja lógica y reactivación) | Responsable | Santiago Saavedra | [#8](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/8) |
+| 11 | Cálculo de canon por unidad | Responsable | Santiago Saavedra | [#9](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/9) |
+| 12 | Unidades con mayor canon (`ReporteMayoresCanonDTO`) | Administrador | Santiago Saavedra | [#9](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/9) |
+| 13 | Reporte de recaudación de un festival (`ReporteVentaDTO`) | Administrador | Santiago Saavedra | [#13](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/13) |
+| 14 | Cálculo de rentabilidad neta | Administrador | Santiago Saavedra | [#14](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
+| 15 | Rentabilidad neta entre dos fechas | Administrador | Santiago Saavedra | [#14](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
+| 16 | Plato estrella (`PlatoDTO`) | Administrador | Santiago Saavedra | [#15](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/15) |
+| 17 | **Cerrar caja del día (Cajero)** | Empleado | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
+| 18 | **Reportes del responsable sobre su unidad** (recaudación, rentabilidad, fechas, plato estrella) | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
+| 19 | **Liquidación de haberes del personal de la unidad** | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
+| 20 | **Filtros combinados de empleados** (tipo, turno, categoría) | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
 
 ---
 
 ## 5. Aportes de Yamil Miño (@akeboshi)
 
-Rama: **`CUCerrarCajaAkeboshi`**
+Rama: **`CUCerrarCajaAkeboshi`** · Pull Request: [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18)
 
 ### Casos de uso nuevos
 
-**17. Cerrar Caja (Cajero)** — el único caso de uso del enunciado que faltaba.
+**17. Cerrar Caja (Cajero)** — el único caso de uso del enunciado que no estaba implementado.
 El cajero abre su caja al comenzar el turno y la cierra al finalizar el día. El sistema calcula las
 **ventas del día a partir de los pedidos cargados** por el responsable (no se tipean a mano), compara con
 el monto declarado y guarda la **diferencia de arqueo**.
@@ -163,7 +163,7 @@ el monto declarado y guarda la **diferencia de arqueo**.
 pero solo estaban expuestos al administrador. Se agregaron rutas propias que **reusan los servicios
 existentes** y quedan siempre acotadas a la unidad del responsable autenticado (no puede consultar otra):
 
-- `GET /responsable/reportes` → Reporte de recaudación ([`ReporteVentaDTO`](src/main/java/unla/epicentro/dtos/ReporteVentaDTO.java)) + recaudación de su unidad
+- `GET /responsable/reportes` → recaudación del festival ([`ReporteVentaDTO`](src/main/java/unla/epicentro/dtos/ReporteVentaDTO.java)) + la parte de su unidad
 - `GET /responsable/reportes/rentabilidad` → rentabilidad neta y entre dos fechas
 - `GET /responsable/reportes/plato-estrella` → plato estrella ([`PlatoDTO`](src/main/java/unla/epicentro/dtos/PlatoDTO.java))
 - Controlador: [`ReporteResponsableController`](src/main/java/unla/epicentro/controllers/ReporteResponsableController.java)
@@ -180,19 +180,24 @@ Ver [`EmpleadoService.buscar`](src/main/java/unla/epicentro/services/EmpleadoSer
 
 1. **Período del festival válido** (`fechaFin` no puede ser anterior a `fechaInicio`) —
    [`Festival.isPeriodoValido()`](src/main/java/unla/epicentro/entities/Festival.java), aplicada en
-   [`FestivalService`](src/main/java/unla/epicentro/services/FestivalService.java) y
-   [`PedidoService`](src/main/java/unla/epicentro/services/PedidoService.java).
-2. **El empleado solo se asigna a un festival donde su unidad está habilitada** (antes el formulario listaba
-   todos los festivales y permitía dejar datos inconsistentes).
-3. **El canon no puede quedar negativo** (el descuento por montaje no puede superar el costo por superficie) —
+   [`FestivalService`](src/main/java/unla/epicentro/services/FestivalService.java) (alta/consulta del festival)
+   y en [`PedidoService`](src/main/java/unla/epicentro/services/PedidoService.java) (alta de pedido).
+2. **El canon no puede quedar negativo**: el descuento por montaje no puede superar el costo por superficie, y
+   la unidad con datos inválidos queda fuera del reporte de mayor canon en lugar de romperlo —
    [`CanonService`](src/main/java/unla/epicentro/services/CanonService.java).
 
 ### Bugs corregidos
 
 - El alta de empleado informaba *"se enviaron los datos de acceso por email"* aunque el SMTP fallara, y la
   contraseña generada se perdía. Ahora se muestra la contraseña temporal en pantalla cuando el mail no sale.
-- El formulario de alta de empleado ofrecía festivales en los que la unidad no participaba.
 - Se agregaron páginas de error propias para **403** y **404** (antes aparecía la pantalla Whitelabel).
+
+### Integración con la rama principal
+
+El PR se actualizó con el último commit de `main` (*"Ajustes de la revisión general"*), resolviendo los
+conflictos a mano para conservar ambos aportes: la navegación por secciones, la asignación automática del
+personal a los festivales de su unidad y las validaciones de superposición de la base, junto con los casos de
+uso y validaciones de este PR.
 
 ---
 
@@ -220,8 +225,8 @@ Ver [`EmpleadoService.buscar`](src/main/java/unla/epicentro/services/EmpleadoSer
    uno cae en un panel distinto.
 2. **Registro de responsable con unidad** — `/registro`, crear un Food Truck con código `FT00000009` y entrar
    con el usuario creado.
-3. **Alta de empleado** — como `carla`: *Empleados → Nuevo empleado*, asignar al "Festival de Primavera"
-   (en curso). Se genera usuario y contraseña, y se envía el mail.
+3. **Alta de empleado** — como `carla`: *Empleados → Nuevo empleado*. Se genera usuario y contraseña, se envía
+   el mail y el empleado queda asignado a los festivales vigentes de la unidad.
 4. **Alta de plato** — como `carla`: *Platos → Nuevo plato*.
 5. **Alta de pedido** — como `carla`: entrar al Festival de Primavera → *Nuevo pedido*.
 6. **Cerrar caja** — como `lucia@epicentro.com`: *Cerrar caja* → abrir con monto inicial → cerrar con el monto

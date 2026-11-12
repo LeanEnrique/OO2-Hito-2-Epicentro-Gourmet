@@ -8,7 +8,6 @@
     <header th:replace="~{fragments :: nav}"></header>
 
     <main>
-        <p><a class="boton secundario" th:href="@{/admin(festival=${festivalSeleccionado?.id})}">← Volver al panel</a></p>
 
         <h1>Plato estrella</h1>
 
@@ -63,12 +62,12 @@
 
             <p>
                 Precio:
-                <strong th:text="'$ ' + ${platoEstrella.precio}"></strong>
+                <strong th:text="'$ ' + ${#numbers.formatDecimal(platoEstrella.precio, 1, 'POINT', 2, 'COMMA')}"></strong>
             </p>
 
             <p>
                 Costo:
-                <strong th:text="'$ ' + ${platoEstrella.costo}"></strong>
+                <strong th:text="'$ ' + ${#numbers.formatDecimal(platoEstrella.costo, 1, 'POINT', 2, 'COMMA')}"></strong>
             </p>
 
         </section>

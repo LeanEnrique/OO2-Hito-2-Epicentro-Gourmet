@@ -10,34 +10,43 @@
 
 <body>
 	<header th:fragment="nav">
-		<a th:href="@{/}" class="logo"><img th:src="@{/img/logo-unla.png}" alt="Universidad Nacional de Lanús"></a>
-		<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
-		<nav>
-			<span sec:authorize="isAnonymous()">
-				<a th:href="@{/registro}">Registrar unidad</a>
-				<a th:href="@{/login}">Iniciar sesión</a>
-			</span>
-			<span sec:authorize="isAuthenticated()">
-				<a th:href="@{/home}">Mi panel</a>
-				<span class="usuario" sec:authentication="name"></span>
-				<span class="chip-rol" sec:authorize="hasRole('ADMINISTRADOR')">Administrador</span>
-				<span class="chip-rol" sec:authorize="hasRole('RESPONSABLE')">Responsable</span>
-				<span class="chip-rol" sec:authorize="hasRole('EMPLEADO')">Empleado</span>
-				<span sec:authorize="hasRole('RESPONSABLE')">
-					<a th:href="@{/responsable}">Inicio</a>
-					<a th:href="@{/responsable/empleados}">Empleados</a>
-					<a th:href="@{/responsable/platos}">Platos</a>
-					<a th:href="@{/responsable/reportes}">Reportes</a>
-					<a th:href="@{/canon}">Calcular canon</a>
-				</span>
-				<span sec:authorize="hasRole('EMPLEADO')">
-					<a th:href="@{/empleado}">Mi panel</a>
-					<a th:href="@{/empleado/caja}">Cerrar caja</a>
-				</span>
-				<form th:action="@{/logout}" method="post" class="inline">
-					<button type="submit">Salir</button>
-				</form>
-			</span>
+		<div class="barra">
+			<a th:href="@{/}" class="logo"><img th:src="@{/img/logo-unla.png}" alt="Universidad Nacional de Lanús"></a>
+			<a th:href="@{/}" class="marca">Epicentro Gourmet</a>
+			<div class="cuenta">
+				<th:block sec:authorize="isAnonymous()">
+					<a th:href="@{/registro}">Registrar unidad</a>
+					<a th:href="@{/login}" class="boton-claro">Iniciar sesión</a>
+				</th:block>
+				<th:block sec:authorize="isAuthenticated()">
+					<span class="usuario" sec:authentication="name"></span>
+					<span class="chip-rol" sec:authorize="hasRole('ADMINISTRADOR')">Administrador</span>
+					<span class="chip-rol" sec:authorize="hasRole('RESPONSABLE')">Responsable</span>
+					<span class="chip-rol" sec:authorize="hasRole('EMPLEADO')">Empleado</span>
+					<form th:action="@{/logout}" method="post" class="inline">
+						<button type="submit">Salir</button>
+					</form>
+				</th:block>
+			</div>
+		</div>
+		<!-- Secciones según el rol (una sola entrada por destino) -->
+		<nav class="secciones" sec:authorize="isAuthenticated()" th:with="r=${rutaActual ?: ''}">
+			<th:block sec:authorize="hasRole('ADMINISTRADOR')">
+				<a th:href="@{/admin}" th:classappend="${r == '/admin'} ? 'activa'">Festivales</a>
+				<a th:href="@{/admin/ranking}" th:classappend="${r == '/admin/ranking'} ? 'activa'">Recaudación y ranking</a>
+				<a th:href="@{/admin/mayor-canon}" th:classappend="${r == '/admin/mayor-canon'} ? 'activa'">Mayor canon</a>
+				<a th:href="@{/admin/rentabilidad}" th:classappend="${r == '/admin/rentabilidad'} ? 'activa'">Rentabilidad</a>
+				<a th:href="@{/admin/plato-estrella}" th:classappend="${r == '/admin/plato-estrella'} ? 'activa'">Plato estrella</a>
+			</th:block>
+			<th:block sec:authorize="hasRole('RESPONSABLE')">
+				<a th:href="@{/responsable}" th:classappend="${r == '/responsable' or r.startsWith('/responsable/festivales') or r.startsWith('/responsable/pedidos')} ? 'activa'">Mi unidad</a>
+				<a th:href="@{/responsable/empleados}" th:classappend="${r.startsWith('/responsable/empleados')} ? 'activa'">Empleados</a>
+				<a th:href="@{/responsable/platos}" th:classappend="${r.startsWith('/responsable/platos')} ? 'activa'">Platos</a>
+				<a th:href="@{/responsable/reportes}" th:classappend="${r.startsWith('/responsable/reportes')} ? 'activa'">Reportes</a>
+				<a th:href="@{/canon}" th:classappend="${r.startsWith('/canon')} ? 'activa'">Canon</a>
+			</th:block>
+			<a sec:authorize="hasRole('EMPLEADO')" th:href="@{/empleado}" th:classappend="${r == '/empleado'} ? 'activa'">Mi panel</a>
+			<a sec:authorize="hasRole('EMPLEADO')" th:href="@{/empleado/caja}" th:classappend="${r.startsWith('/empleado/caja')} ? 'activa'">Cerrar caja</a>
 		</nav>
 	</header>
 
