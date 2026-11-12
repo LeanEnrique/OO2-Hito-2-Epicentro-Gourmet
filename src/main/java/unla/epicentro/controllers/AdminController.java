@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.services.CanonService;
+import unla.epicentro.services.ReporteService;
 
 @Controller
 @RequestMapping("/admin")
@@ -19,10 +20,12 @@ public class AdminController {
 
 	private final FestivalRepository festivalRepository;
 	private final CanonService canonService;
+	private final ReporteService reporteService;
 
-	public AdminController(FestivalRepository festivalRepository, CanonService canonService) {
+	public AdminController(FestivalRepository festivalRepository, CanonService canonService, ReporteService reporteService) {
 		this.festivalRepository = festivalRepository;
 		this.canonService = canonService;
+		this.reporteService = reporteService;
 	}
 
 	@GetMapping
@@ -49,6 +52,13 @@ public String inicio(
                 "mayoresCanon",
                 canonService.obtenerMayoresCanon(seleccionado, x));
     }
+
+	if (seleccionado != null) {
+    model.addAttribute(
+            "reporteVenta",
+            reporteService.obtenerRecaudacion(seleccionado)
+    );
+}
 
     return "admin/inicio";
 }
