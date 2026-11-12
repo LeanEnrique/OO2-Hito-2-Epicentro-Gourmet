@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import unla.epicentro.dtos.ReporteRentabilidadDTO;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.services.CanonService;
 import unla.epicentro.services.ReporteService;
+import unla.epicentro.entities.UnidadDeVenta;
+import unla.epicentro.services.RentabilidadService;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,11 +24,13 @@ public class AdminController {
 	private final FestivalRepository festivalRepository;
 	private final CanonService canonService;
 	private final ReporteService reporteService;
+	private final RentabilidadService rentabilidadService;
 
-	public AdminController(FestivalRepository festivalRepository, CanonService canonService, ReporteService reporteService) {
+	public AdminController(FestivalRepository festivalRepository, CanonService canonService, ReporteService reporteService, RentabilidadService rentabilidadService) {
 		this.festivalRepository = festivalRepository;
 		this.canonService = canonService;
 		this.reporteService = reporteService;
+		this.rentabilidadService = rentabilidadService;
 	}
 
 	@GetMapping
@@ -79,4 +84,73 @@ public String inicio(
 		return festivales.stream().filter(f -> f.estaActivo(hoy)).findFirst()
 				.orElse(festivales.isEmpty() ? null : festivales.get(0));
 	}
+
+	@GetMapping("/rentabilidad")
+public String rentabilidad(
+        @RequestParam(required = false) Long festivalId,
+        @RequestParam(required = false) Long unidadId,
+        @RequestParam(required = false) LocalDate desde,
+        @RequestParam(required = false) LocalDate hasta,
+        Model model) {
+
+    List<Festival> festivales =
+            festivalRepository.findAllByOrderByFechaInicioAsc();
+
+    model.addAttribute("festivales", festivales);
+
+    Festival festival = festivalId == null
+            ? null
+            : festivalRepository.findById(festivalId).orElse(null);
+
+    model.addAttribute("festivalSeleccionado", festival);
+
+    if (festival != null) {
+
+        model.addAttribute("unidades", festival.getUnidades());
+
+        model.addAttribute("unidadSeleccionada", unidadId);
+
+        if (unidadId != null) {
+
+            UnidadDeVenta unidad = festival.getUnidades()
+                    .stream()
+                    .filter(u -> u.getId().equals(unidadId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (unidad == null) {
+                model.addAttribute("error",
+                        "La unidad no pertenece al festival seleccionado.");
+
+            } else {
+                try {
+
+                    ReporteRentabilidadDTO reporte;
+
+                    if (desde == null && hasta == null) {
+
+                        reporte = rentabilidadService.calcularRentabilidad(
+                                festival, unidad);
+
+                    } else {
+
+                        reporte = rentabilidadService.calcularRentabilidadEntreFechas(
+                                festival, unidad, desde, hasta);
+                    }
+
+                    model.addAttribute("reporte", reporte);
+
+                } catch (IllegalArgumentException e) {
+                    model.addAttribute("error", e.getMessage());
+                }
+            }
+        }
+    }
+
+    model.addAttribute("desde", desde);
+    model.addAttribute("hasta", hasta);
+
+    return "admin/rentabilidad";
+}
+
 }

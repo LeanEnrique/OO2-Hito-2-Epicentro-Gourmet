@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Rentabilidad')}"></head>
+
+<body>
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+        <h1>Rentabilidad neta</h1>
+
+        <p>
+            Consultá la rentabilidad de una unidad de venta
+            durante un festival o entre dos fechas.
+        </p>
+
+        <form th:action="@{/admin/rentabilidad}" method="get">
+
+            <label for="festivalId">Festival</label>
+
+            <select id="festivalId" name="festivalId" required onchange="this.form.submit()">
+
+                <option value="">Seleccionar festival</option>
+
+                <option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}" th:selected="${festivalSeleccionado != null
+                            and f.id == festivalSeleccionado.id}">
+                </option>
+
+            </select>
+
+            <div th:if="${festivalSeleccionado != null}">
+
+                <label for="unidadId">Unidad de venta</label>
+
+                <select id="unidadId" name="unidadId" required>
+
+                    <option value="">Seleccionar unidad</option>
+
+                    <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.nombreComercial}" th:selected="${unidadSeleccionada != null
+                                and u.id == unidadSeleccionada}">
+                    </option>
+
+                </select>
+
+                <h3>Período de consulta</h3>
+
+                <label for="desde">Desde</label>
+                <input type="date" id="desde" name="desde" th:value="${desde}">
+
+                <label for="hasta">Hasta</label>
+                <input type="date" id="hasta" name="hasta" th:value="${hasta}">
+
+                <p>
+                    Dejá ambas fechas vacías para consultar
+                    todo el festival.
+                </p>
+
+                <button type="submit">Consultar rentabilidad</button>
+
+            </div>
+        </form>
+
+        <p class="error" th:if="${error != null}" th:text="${error}"></p>
+
+        <section th:if="${reporte != null}">
+
+            <h2>Resultado de la consulta</h2>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Ingresos por pedidos</th>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(
+                            reporte.ingresos, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Costos de platos</th>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(
+                            reporte.costosPlatos, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Sueldos</th>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(
+                            reporte.sueldos, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Canon</th>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(
+                            reporte.canon, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Rentabilidad neta</th>
+                        <td>
+                            <strong th:text="'$ ' + ${#numbers.formatDecimal(
+                                reporte.rentabilidadNeta,
+                                1, 'POINT', 2, 'COMMA')}">
+                            </strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <a th:href="@{/admin}">Volver al panel</a>
+
+    </main>
+</body>
+
+</html>

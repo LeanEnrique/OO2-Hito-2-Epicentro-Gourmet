@@ -7,6 +7,10 @@
 	<header th:replace="~{fragments :: nav}"></header>
 	<main>
 		<h1>Panel de administración</h1>
+
+		<a th:href="@{/admin/rentabilidad}">
+			Consultar rentabilidad neta
+		</a>
 		<p th:if="${festivales.isEmpty()}">Todavía no hay festivales cargados.</p>
 
 		<th:block th:unless="${festivales.isEmpty()}">

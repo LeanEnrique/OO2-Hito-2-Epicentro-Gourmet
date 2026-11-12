@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import unla.epicentro.entities.AsignacionPersonal;
 import unla.epicentro.entities.Persona;
 import unla.epicentro.entities.UnidadDeVenta;
+import unla.epicentro.entities.Festival;
 
 public interface AsignacionPersonalRepository extends JpaRepository<AsignacionPersonal, Long> {
 
@@ -18,4 +19,6 @@ public interface AsignacionPersonalRepository extends JpaRepository<AsignacionPe
 			Persona persona,
 			UnidadDeVenta unidad,
 			unla.epicentro.entities.Festival festival);
+
+	List<AsignacionPersonal> findByFestivalAndUnidad(Festival festival, UnidadDeVenta unidad);
 }
