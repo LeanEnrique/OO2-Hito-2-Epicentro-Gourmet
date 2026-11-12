@@ -15,4 +15,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 	List<Pedido> findByFestival(Festival festival);
 	List<Pedido> findByFestivalAndUnidad(Festival festival, UnidadDeVenta unidad);
 	List<Pedido> findByFestivalAndUnidadAndFechaBetween(Festival festival, UnidadDeVenta unidad, LocalDate desde, LocalDate hasta);
+	List<Pedido> findByUnidadAndFestivalAndFecha(UnidadDeVenta unidad, Festival festival, LocalDate fecha);
 }
