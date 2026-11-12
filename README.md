@@ -170,10 +170,10 @@ Cada caso de uso se desarrolló en su rama `CU<Funcionalidad><Integrante>` y se 
 | 14 | Cálculo de rentabilidad neta | Administrador | Santiago Saavedra | [#14](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
 | 15 | Rentabilidad neta entre dos fechas | Administrador | Santiago Saavedra | [#14](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/14) |
 | 16 | Plato estrella (`PlatoDTO`) | Administrador | Santiago Saavedra | [#15](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/15) |
-| 17 | **Cerrar caja del día (Cajero)** | Empleado | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
-| 18 | **Reportes del responsable sobre su unidad** (recaudación, rentabilidad, fechas, plato estrella) | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
-| 19 | **Liquidación de haberes del personal de la unidad** | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
-| 20 | **Filtros combinados de empleados** (tipo, turno, categoría) | Responsable | Yamil Miño | [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18) |
+| 17 | **Cerrar caja del día (Cajero)** | Empleado | Yamil Miño | [#21](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/21) |
+| 18 | **Reportes del responsable sobre su unidad** (recaudación, rentabilidad, fechas, plato estrella) | Responsable | Yamil Miño | [#21](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/21) |
+| 19 | **Liquidación de haberes del personal de la unidad** | Responsable | Yamil Miño | [#21](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/21) |
+| 20 | **Filtros combinados de empleados** (tipo, turno, categoría) | Responsable | Yamil Miño | [#21](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/21) |
 
 ## Notas de implementación
 
@@ -200,7 +200,7 @@ Cada caso de uso se desarrolló en su rama `CU<Funcionalidad><Integrante>` y se 
 
 ## Aportes de Yamil Miño (@akeboshi)
 
-Rama: **`CUCerrarCajaAkeboshi`** · Pull Request: [#18](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/18)
+Rama: **`CUCerrarCajaAkeboshi`** · Pull Request: [#21](https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet/pull/21)
 
 ### Casos de uso nuevos
 
