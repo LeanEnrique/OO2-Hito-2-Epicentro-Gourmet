@@ -18,7 +18,6 @@ import unla.epicentro.services.ReporteService;
 import unla.epicentro.services.RentabilidadService;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.UnidadDeVenta;
-import unla.epicentro.entities.UnidadDeVenta;
 
 @Controller
 @RequestMapping("/admin")
@@ -38,51 +37,50 @@ public class AdminController {
 		this.platoEstrellaService = platoEstrellaService;
 	}
 
+	// Panel principal: festival elegido con sus unidades y accesos a los reportes
 	@GetMapping
-public String inicio(
-        @RequestParam(required = false) Long festival,
-        @RequestParam(defaultValue = "3") int x,
-        Model model) {
-
-    List<Festival> festivales = festivalRepository.findAllByOrderByFechaInicioAsc();
-
-    Festival seleccionado = festival == null
-            ? porDefecto(festivales)
-            : festivales.stream()
-                    .filter(f -> f.getId().equals(festival))
-                    .findFirst()
-                    .orElse(null);
-
-    model.addAttribute("festivales", festivales);
-    model.addAttribute("seleccionado", seleccionado);
-    model.addAttribute("x", x);
-
-    if (seleccionado != null && x > 0) {
-        model.addAttribute(
-                "mayoresCanon",
-                canonService.obtenerMayoresCanon(seleccionado, x));
-    }
-
-	if (seleccionado != null) {
-    model.addAttribute(
-            "reporteVenta",
-            reporteService.obtenerRecaudacion(seleccionado)
-    );
-}
-
-    return "admin/inicio";
-}
-	/*
 	public String inicio(@RequestParam(required = false) Long festival, Model model) {
+		cargarFestival(festival, model);
+		return "admin/inicio";
+	}
+
+	// Reporte de recaudación total y ranking de unidades por recaudación
+	@GetMapping("/ranking")
+	public String ranking(@RequestParam(required = false) Long festival, Model model) {
+		if (cargarFestival(festival, model)) {
+			Festival seleccionado = (Festival) model.getAttribute("seleccionado");
+			model.addAttribute("reporteVenta", reporteService.obtenerRecaudacion(seleccionado));
+			model.addAttribute("ranking", reporteService.rankingUnidades(seleccionado));
+		}
+		return "admin/ranking";
+	}
+
+	// Las x unidades que más pagaron de canon en el festival
+	@GetMapping("/mayor-canon")
+	public String mayorCanon(@RequestParam(required = false) Long festival,
+			@RequestParam(defaultValue = "3") int x, Model model) {
+		model.addAttribute("x", x);
+		if (cargarFestival(festival, model)) {
+			if (x <= 0) {
+				model.addAttribute("error", "La cantidad de unidades debe ser mayor a cero");
+			} else {
+				model.addAttribute("mayoresCanon",
+						canonService.obtenerMayoresCanon((Festival) model.getAttribute("seleccionado"), x));
+			}
+		}
+		return "admin/mayor-canon";
+	}
+
+	// Carga la lista de festivales y el elegido; devuelve false si el festival pedido no existe
+	private boolean cargarFestival(Long festival, Model model) {
 		List<Festival> festivales = festivalRepository.findAllByOrderByFechaInicioAsc();
 		Festival seleccionado = festival == null ? porDefecto(festivales)
 				: festivales.stream().filter(f -> f.getId().equals(festival)).findFirst().orElse(null);
 		model.addAttribute("festivales", festivales);
 		model.addAttribute("seleccionado", seleccionado);
-		return "admin/inicio";
+		return seleccionado != null;
 	}
 
-	*/
 	// Sin festival elegido se muestra el que está en curso hoy, o el primero si no hay ninguno en curso
 	private Festival porDefecto(List<Festival> festivales) {
 		LocalDate hoy = LocalDate.now();

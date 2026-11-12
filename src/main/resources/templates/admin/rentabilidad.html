@@ -7,6 +7,7 @@
     <header th:replace="~{fragments :: nav}"></header>
 
     <main>
+        <p><a class="boton secundario" th:href="@{/admin(festival=${festivalSeleccionado?.id})}">← Volver al panel</a></p>
         <h1>Rentabilidad neta</h1>
 
         <p>
@@ -106,7 +107,6 @@
 
         </section>
 
-        <a th:href="@{/admin}">Volver al panel</a>
 
     </main>
 </body>

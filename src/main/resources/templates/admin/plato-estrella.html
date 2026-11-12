@@ -8,6 +8,7 @@
     <header th:replace="~{fragments :: nav}"></header>
 
     <main>
+        <p><a class="boton secundario" th:href="@{/admin(festival=${festivalSeleccionado?.id})}">← Volver al panel</a></p>
 
         <h1>Plato estrella</h1>
 
@@ -77,7 +78,6 @@
             No hay pedidos registrados para esta unidad y festival.
         </p>
 
-        <a th:href="@{/admin}">Volver al panel</a>
 
     </main>
 
