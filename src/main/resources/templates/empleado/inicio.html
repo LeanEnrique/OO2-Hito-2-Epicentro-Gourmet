@@ -52,7 +52,7 @@
 				</table>
 				<p class="nota" th:text="${detalle.descripcionFactor}"></p>
 				<p>
-					<button type="button" disabled title="Disponible próximamente">Descargar recibo PDF</button>
+					<a class="boton" th:href="@{/empleado/recibo(festival=${festivalSeleccionado ?: liquidaciones[0].festivalId})}">Descargar recibo PDF</a>
 				</p>
 			</section>
 		</th:block>
