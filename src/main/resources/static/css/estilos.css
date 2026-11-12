@@ -56,7 +56,7 @@ form.inline button { padding: 4px 10px; }
 .estado.en-curso { background: var(--bordo); color: var(--blanco); }
 .estado.finalizado { border-color: #999; color: #777; background: #eee; }
 td .boton.secundario { padding: 4px 10px; }
-form.en-linea { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+form.en-linea { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-bottom: 16px; }
 form.en-linea label { flex: 1; min-width: 240px; margin-bottom: 0; }
 
 .ok { color: #1e7b34; }
@@ -68,3 +68,4 @@ form.en-linea label { flex: 1; min-width: 240px; margin-bottom: 0; }
 	header .marca { text-align: left; font-size: 1.2rem; }
 	header nav { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
 }
+form.en-linea label.corto { flex: 0 0 200px; min-width: 0; }

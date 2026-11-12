@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Recaudación y ranking')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/admin(festival=${seleccionado?.id})}">← Volver al panel</a></p>
+		<h1>Recaudación y ranking</h1>
+
+		<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
+
+		<section th:if="${seleccionado != null}">
+			<h2 th:text="${seleccionado.nombre}"></h2>
+			<p>Recaudación total del festival:
+				<strong th:text="'$ ' + ${#numbers.formatDecimal(reporteVenta.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}"></strong>
+			</p>
+
+			<h3>Ranking de unidades por recaudación</h3>
+			<p th:if="${ranking.isEmpty()}">No hay unidades en este festival.</p>
+			<table th:unless="${ranking.isEmpty()}">
+				<thead>
+					<tr><th>#</th><th>Nombre comercial</th><th>Código</th><th>Tipo</th><th class="monto">Pedidos</th><th class="monto">Recaudación</th></tr>
+				</thead>
+				<tbody>
+					<tr th:each="r : ${ranking}">
+						<td th:text="${r.posicion}"></td>
+						<td th:text="${r.nombreComercial}"></td>
+						<td th:text="${r.codigo}"></td>
+						<td th:text="${r.tipo}"></td>
+						<td class="monto" th:text="${r.cantidadPedidos}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.recaudacion, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
+</html>
