@@ -60,7 +60,6 @@ public class ResponsableController {
 		this.festivalService = festivalService;
 	}
 
-
 	@GetMapping
 	public String inicio(Principal principal, Model model) {
 		UnidadDeVenta unidad = unidadDe(principal);
