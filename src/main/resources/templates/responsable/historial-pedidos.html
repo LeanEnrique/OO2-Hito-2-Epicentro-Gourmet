@@ -1,0 +1,87 @@
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Historial de pedidos')}"></head>
+
+<body>
+    <header th:replace="~{fragments :: nav}"></header>
+
+    <main>
+        <p>
+            <a class="boton secundario" th:href="@{/responsable}">
+                Volver a mi unidad
+            </a>
+        </p>
+
+        <h1>Historial de pedidos</h1>
+
+        <p th:text="'Unidad: ' + ${unidad.nombreComercial}"></p>
+
+        <div th:replace="~{fragments :: mensajes}"></div>
+
+        <h2>Filtrar por fecha</h2>
+
+        <form th:action="@{/responsable/pedidos}" method="get" class="en-linea">
+
+            <label class="corto">
+                Desde
+                <input type="date" name="desde" th:value="${desde}">
+            </label>
+
+            <label class="corto">
+                Hasta
+                <input type="date" name="hasta" th:value="${hasta}">
+            </label>
+
+            <button type="submit">Buscar</button>
+
+            <a class="boton secundario" th:href="@{/responsable/pedidos}">
+                Limpiar filtros
+            </a>
+        </form>
+
+        <h2>Pedidos registrados</h2>
+
+        <p th:if="${pedidos.isEmpty()}">
+            No se encontraron pedidos.
+        </p>
+
+        <p th:unless="${pedidos.isEmpty()}" th:text="${pedidos.size()} + ' pedidos encontrados'">
+        </p>
+
+        <table th:unless="${pedidos.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Festival</th>
+                    <th>Detalle</th>
+                    <th class="monto">Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="p : ${pedidos}">
+                    <td th:text="${p.id}"></td>
+
+                    <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
+
+                    <td th:text="${p.festival.nombre}"></td>
+
+                    <td>
+                        <span th:each="i, st : ${p.items}"
+                            th:text="${i.cantidad} + ' x ' + ${i.plato.nombre} + (${st.last} ? '' : ', ')">
+                        </span>
+                    </td>
+
+                    <td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+
+</html>
+```

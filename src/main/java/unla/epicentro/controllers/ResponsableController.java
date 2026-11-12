@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -124,6 +125,33 @@ public class ResponsableController {
 			return "redirect:/responsable/pedidos/nuevo";
 		}
 	}
+
+	@GetMapping("/pedidos")
+public String historialPedidos(
+        Principal principal,
+        @RequestParam(required = false) LocalDate desde,
+        @RequestParam(required = false) LocalDate hasta,
+        Model model) {
+
+    UnidadDeVenta unidad = unidadDe(principal);
+
+    model.addAttribute("unidad", unidad);
+    model.addAttribute("desde", desde);
+    model.addAttribute("hasta", hasta);
+
+    try {
+        model.addAttribute(
+                "pedidos",
+                pedidoService.historialPedidos(unidad, desde, hasta));
+
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("pedidos", List.of());
+        model.addAttribute("error", e.getMessage());
+    }
+
+    return "responsable/historial-pedidos";
+}
+
 @GetMapping("/empleados")
 	public String empleados(
 			Principal principal,

@@ -75,4 +75,25 @@ public class PedidoService {
 		}
 		return pedidoRepository.save(pedido);
 	}
+
+	public List<Pedido> historialPedidos(UnidadDeVenta unidad, LocalDate desde, LocalDate hasta) {
+
+    if (desde != null && hasta != null) {
+        if (desde.isAfter(hasta)) {
+            throw new IllegalArgumentException(
+                    "La fecha desde no puede ser posterior a la fecha hasta");
+        }
+
+        return pedidoRepository
+                .findByUnidadAndFechaBetweenOrderByFechaDescIdDesc(
+                        unidad, desde, hasta);
+    }
+
+    if (desde != null || hasta != null) {
+        throw new IllegalArgumentException(
+                "Debes ingresar ambas fechas para realizar el filtro");
+    }
+
+    return pedidoRepository.findByUnidadOrderByFechaDescIdDesc(unidad);
+}
 }
