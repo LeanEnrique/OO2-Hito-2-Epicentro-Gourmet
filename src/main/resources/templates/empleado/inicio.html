@@ -21,6 +21,15 @@
 				th:text="'Tu próximo festival: ' + ${proxima.festival.nombre} + ' en ' + ${proxima.unidad.nombreComercial} + ', desde el ' + ${#temporals.format(proxima.festival.fechaInicio, 'dd/MM/yyyy')}"></p>
 		</section>
 
+		<h2>Caja</h2>
+		<section class="hoy" th:if="${esCajero}">
+			<p>Como cajero podés abrir y cerrar la caja de tu turno al finalizar el día.</p>
+			<p><a class="boton" th:href="@{/empleado/caja}">Ir a Cerrar caja</a></p>
+		</section>
+		<section class="hoy" th:unless="${esCajero}">
+			<p class="nota">La caja la administran solamente los cajeros.</p>
+		</section>
+
 		<h2>Mis festivales</h2>
 		<p th:if="${historial.isEmpty()}">Todavía no tenés festivales asignados.</p>
 		<table th:unless="${historial.isEmpty()}">

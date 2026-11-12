@@ -11,6 +11,7 @@ import unla.epicentro.dtos.LiquidacionDTO;
 import unla.epicentro.entities.AsignacionPersonal;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.Persona;
+import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.repositories.AsignacionPersonalRepository;
 
 @Service
@@ -35,6 +36,18 @@ public class LiquidacionService {
 				.toList();
 	}
 
+	// Liquidación del personal de una unidad en un festival: la usa el responsable con su propia unidad
+	public List<DetalleLiquidacionDTO> liquidarPersonal(Festival festival, UnidadDeVenta unidad) {
+
+		if (festival == null || unidad == null) {
+			throw new IllegalArgumentException("El festival y la unidad son obligatorios");
+		}
+
+		return asignacionRepository.findByFestivalAndUnidad(festival, unidad).stream()
+				.map(asignacion -> detalle(asignacion.getPersona(), asignacion))
+				.toList();
+	}
+
 	// Solo se puede ver el detalle de un festival en el que el empleado trabajó; sin festivalId, el más reciente
 	public Optional<DetalleLiquidacionDTO> detalle(Persona empleado, Long festivalId) {
 		return asignacionRepository.findByPersonaOrderByFestivalFechaInicioDesc(empleado).stream()
@@ -48,6 +61,7 @@ public class LiquidacionService {
 		BigDecimal sueldoBase = festival.getCostos().getSueldoBase();
 		BigDecimal adicional = empleado.calcularAdicional(festival);
 		return new DetalleLiquidacionDTO(
+				empleado.getNombreCompleto(),
 				festival.getNombre(),
 				asignacion.getUnidad().getNombreComercial(),
 				empleado.getRolLaboral(),

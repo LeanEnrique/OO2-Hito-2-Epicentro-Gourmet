@@ -42,24 +42,33 @@ public class CanonService {
         BigDecimal canonSuperficie = unidad.getSuperficie()
             .multiply(costos.getPorSuperficie());
 
+        BigDecimal canon;
+
         if (unidad instanceof FoodTruck foodTruck) {
 
-            if (foodTruck.isConexionElectrica()) {
-                return canonSuperficie.add(costos.getPorElectricidad());
-            }
+            canon = foodTruck.isConexionElectrica()
+                ? canonSuperficie.add(costos.getPorElectricidad())
+                : canonSuperficie;
 
-            return canonSuperficie;
-        }
-
-        if (unidad instanceof PuestoDesarmable puesto) {
+        } else if (unidad instanceof PuestoDesarmable puesto) {
 
             BigDecimal costoMontaje = costos.getPorMontaje()
                 .multiply(BigDecimal.valueOf(puesto.getTiempoDeArmado()));
 
-            return canonSuperficie.subtract(costoMontaje);
+            canon = canonSuperficie.subtract(costoMontaje);
+
+        } else {
+            throw new IllegalArgumentException("Tipo de unidad de venta no soportado");
         }
 
-        throw new IllegalArgumentException("Tipo de unidad de venta no soportado");
+        // Validación de carga: el descuento por montaje no puede dejar el canon en negativo
+        if (canon.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(
+                "El canon de " + unidad.getNombreComercial() + " da negativo ($ " + canon
+                    + "): el descuento por montaje supera el costo por superficie");
+        }
+
+        return canon;
     }
 
     public CanonDTO obtenerCanon(UnidadDeVenta unidad,Festival festival) {
@@ -74,7 +83,11 @@ public class CanonService {
         List<CanonDTO> resultado = new ArrayList<>();
 
         for (UnidadDeVenta unidad : festival.getUnidades()) {
-            resultado.add(obtenerCanon(unidad, festival));
+            try {
+                resultado.add(obtenerCanon(unidad, festival));
+            } catch (IllegalArgumentException e) {
+                // Una unidad con datos de canon inválidos no entra en el listado, pero no rompe el reporte
+            }
         }
 
         return resultado;

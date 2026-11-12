@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Liquidación de haberes')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable/reportes}">← Volver a reportes</a></p>
+		<h1>Liquidación de haberes del personal</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<p th:text="'Unidad: ' + ${unidad.nombreComercial} + ' (' + ${unidad.codigo} + ')'"></p>
+
+		<p th:if="${festivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival.</p>
+
+		<form th:unless="${festivales.isEmpty()}" th:action="@{/responsable/reportes/liquidacion}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festivalId" onchange="this.form.submit()">
+					<option value="">Seleccioná un festival</option>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${festival != null and f.id == festival.id}"></option>
+				</select>
+			</label>
+			<noscript><button type="submit">Consultar</button></noscript>
+		</form>
+
+		<section th:if="${festival != null}">
+			<h2 th:text="${festival.nombre} + ' · ' + ${festival.cantidadDias} + ' días'"></h2>
+
+			<p th:if="${liquidaciones.isEmpty()}">No hay personal asignado a tu unidad en este festival.</p>
+
+			<table th:unless="${liquidaciones.isEmpty()}">
+				<thead>
+					<tr>
+						<th>Empleado</th>
+						<th>Rol</th>
+						<th class="monto">Sueldo base</th>
+						<th>Adicional</th>
+						<th class="monto">Subtotal</th>
+						<th class="monto">Factor</th>
+						<th class="monto">Total a cobrar</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="l : ${liquidaciones}">
+						<td th:text="${l.empleado}"></td>
+						<td th:text="${l.rol}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(l.sueldoBase, 1, 'POINT', 2, 'COMMA')}"></td>
+						<td>
+							<span th:text="${l.conceptoAdicional} + ': $ ' + ${#numbers.formatDecimal(l.adicional, 1, 'POINT', 2, 'COMMA')}"></span>
+						</td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(l.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+						<td class="monto" th:text="l.porcentajeFactor + '%'"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(l.total, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr class="total">
+						<th colspan="6">Total de la nómina</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(totalNomina, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<p class="nota" th:if="${not liquidaciones.isEmpty()}" th:text="${liquidaciones[0].descripcionFactor}"></p>
+		</section>
+	</main>
+</body>
+</html>

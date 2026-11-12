@@ -26,10 +26,20 @@ public class FestivalService {
 	}
 
 	public Festival festivalDe(UnidadDeVenta unidad, Long festivalId) {
-		return festivalesDe(unidad).stream()
+		Festival festival = festivalesDe(unidad).stream()
 				.filter(f -> f.getId().equals(festivalId))
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("Tu unidad no está inscripta en ese festival"));
+		validarPeriodo(festival);
+		return festival;
+	}
+
+	// Validación de carga: no se opera sobre un festival cuyo período es incoherente
+	public void validarPeriodo(Festival festival) {
+		if (festival != null && !festival.isPeriodoValido()) {
+			throw new IllegalArgumentException("El período del festival " + festival.getNombre()
+					+ " no es válido: la fecha de fin no puede ser anterior a la de inicio");
+		}
 	}
 
 	// Festivales de la unidad que todavía no terminaron (para asignar personal)
@@ -53,6 +63,7 @@ public class FestivalService {
 	public Festival asociar(UnidadDeVenta unidad, Long festivalId) {
 		Festival festival = festivalRepository.findById(festivalId)
 				.orElseThrow(() -> new IllegalArgumentException("El festival no existe"));
+		validarPeriodo(festival);
 		if (festival.getFechaFin().isBefore(LocalDate.now())) {
 			throw new IllegalArgumentException("No se puede inscribir la unidad en un festival que ya terminó");
 		}

@@ -46,6 +46,11 @@ public class Festival {
 		return ChronoUnit.DAYS.between(fechaInicio, fechaFin) + 1;
 	}
 
+	// Validación de carga: el período del festival tiene que ser coherente
+	public boolean isPeriodoValido() {
+		return fechaInicio != null && fechaFin != null && !fechaFin.isBefore(fechaInicio);
+	}
+
 	public boolean estaActivo(LocalDate fecha) {
 		return !fecha.isBefore(fechaInicio) && !fecha.isAfter(fechaFin);
 	}

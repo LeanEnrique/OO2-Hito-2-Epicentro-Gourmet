@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Página no encontrada')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main class="angosto">
+		<h1>Página no encontrada</h1>
+		<p>La dirección a la que quisiste entrar no existe.</p>
+		<p><a class="boton" th:href="@{/}">Volver al inicio</a></p>
+	</main>
+</body>
+</html>

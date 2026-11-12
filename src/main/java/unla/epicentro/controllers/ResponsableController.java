@@ -26,8 +26,10 @@ import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.Pedido;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Cajero;
+import unla.epicentro.entities.Categoria;
 import unla.epicentro.entities.Cocinero;
 import unla.epicentro.entities.Persona;
+import unla.epicentro.entities.Turno;
 import unla.epicentro.repositories.PlatoRepository;
 import unla.epicentro.repositories.UnidadDeVentaRepository;
 import unla.epicentro.services.PedidoService;
@@ -149,6 +151,9 @@ public class ResponsableController {
 	public String empleados(
 			Principal principal,
 			@RequestParam(required = false, defaultValue = "") String busqueda,
+			@RequestParam(required = false) String tipo,
+			@RequestParam(required = false) Turno turno,
+			@RequestParam(required = false) Categoria categoria,
 			Model model) {
 
 		UnidadDeVenta unidad = unidadDe(principal);
@@ -156,11 +161,17 @@ public class ResponsableController {
 		model.addAttribute("unidad", unidad);
 		model.addAttribute(
 				"empleados",
-				empleadoService.buscar(unidad, busqueda, true));
+				empleadoService.buscar(unidad, busqueda, true, tipo, turno, categoria));
 		model.addAttribute(
 				"bajas",
 				empleadoService.buscar(unidad, "", false));
 		model.addAttribute("busqueda", busqueda);
+		model.addAttribute("tipo", tipo);
+		model.addAttribute("turno", turno);
+		model.addAttribute("categoria", categoria);
+		model.addAttribute("turnos", Turno.values());
+		model.addAttribute("categorias", Categoria.values());
+		model.addAttribute("tipos", List.of("CAJERO", "COCINERO"));
 		model.addAttribute("festivalesPorEmpleado", empleadoService.festivalesPorEmpleado(unidad));
 
 		return "responsable/empleados";
@@ -178,18 +189,23 @@ public class ResponsableController {
 	@PostMapping("/empleados")
 	public String crearEmpleado(Principal principal, @Valid @ModelAttribute("empleadoDTO") EmpleadoDTO dto, BindingResult result, Model model, RedirectAttributes redirect) {
 
+		UnidadDeVenta unidad = unidadDe(principal);
+
 		if (result.hasErrors()) {
 
-			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidadDe(principal)));
+			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidad));
 			return "responsable/form-empleado";
 		}
 
 		try {
-			boolean mailEnviado = empleadoService.crear(dto, unidadDe(principal));
-			if (mailEnviado) {
+			String passwordTemporal = empleadoService.crear(dto, unidad);
+
+			if (passwordTemporal == null) {
 				redirect.addFlashAttribute("mensaje", "Empleado creado correctamente. Se enviaron sus datos de acceso por email.");
 			} else {
-				redirect.addFlashAttribute("error", "El empleado se creó, pero no se pudo enviar el email con sus datos de acceso. Revisá la configuración de mail.");
+				// Sin SMTP configurado el mail no sale: mostramos la clave para no perder el alta
+				redirect.addFlashAttribute("error", "El empleado se creó, pero no se pudo enviar el email. "
+						+ "Su contraseña temporal es: " + passwordTemporal);
 			}
 
 			return "redirect:/responsable/empleados";
@@ -197,7 +213,7 @@ public class ResponsableController {
 		} catch (IllegalArgumentException e) {
 
 			model.addAttribute("error", e.getMessage());
-			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidadDe(principal)));
+			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidad));
 
 			return "responsable/form-empleado";
 		}

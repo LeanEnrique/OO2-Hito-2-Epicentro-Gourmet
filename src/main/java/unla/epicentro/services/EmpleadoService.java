@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import unla.epicentro.dtos.EmpleadoDTO;
 import unla.epicentro.entities.AsignacionPersonal;
 import unla.epicentro.entities.Cajero;
+import unla.epicentro.entities.Categoria;
 import unla.epicentro.entities.Cocinero;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.Persona;
+import unla.epicentro.entities.Turno;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Usuario;
 import unla.epicentro.repositories.AsignacionPersonalRepository;
@@ -52,23 +54,59 @@ public class EmpleadoService {
 	}
 
 	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda, boolean activo) {
+		return buscar(unidad, busqueda, activo, null, null, null);
+	}
+
+	// Filtros combinables por atributo: tipo de empleado, turno y categoría, además de la búsqueda libre.
+	// Siempre trae únicamente las entidades que no están dadas de baja lógicamente (activo = true).
+	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda, boolean activo,
+			String tipo, Turno turno, Categoria categoria) {
+
 		if (busqueda == null) {
 			busqueda = "";
 		}
 
-		return personaRepository.buscarEmpleadosDeUnidad(
-				unidad,
-				busqueda.trim(),
-				activo);
+		return personaRepository.buscarEmpleadosDeUnidad(unidad, busqueda.trim(), activo).stream()
+				.filter(empleado -> coincideTipo(empleado, tipo))
+				.filter(empleado -> coincideTurno(empleado, turno))
+				.filter(empleado -> coincideCategoria(empleado, categoria))
+				.toList();
 	}
 
+	private boolean coincideTipo(Persona empleado, String tipo) {
+		if (tipo == null || tipo.isBlank()) {
+			return true;
+		}
+		if ("CAJERO".equals(tipo)) {
+			return empleado instanceof Cajero;
+		}
+		if ("COCINERO".equals(tipo)) {
+			return empleado instanceof Cocinero;
+		}
+		return true;
+	}
+
+	private boolean coincideTurno(Persona empleado, Turno turno) {
+		if (turno == null) {
+			return true;
+		}
+		return empleado instanceof Cajero cajero && turno == cajero.getTurno();
+	}
+
+	private boolean coincideCategoria(Persona empleado, Categoria categoria) {
+		if (categoria == null) {
+			return true;
+		}
+		return empleado instanceof Cocinero cocinero && categoria == cocinero.getCategoria();
+	}
+
+	// Devuelve null si el mail de bienvenida salió bien, o la contraseña temporal si no se pudo enviar
 	@Transactional
-	// Devuelve true si se pudo enviar el mail con los datos de acceso
-	public boolean crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
+	public String crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
 
 		validarDatos(dto, null);
 
-		// El empleado trabaja en los festivales de su unidad: tiene que haber al menos uno vigente
+		// El empleado trabaja en los festivales vigentes de su unidad: tiene que haber al menos uno
 		if (festivalesVigentes(unidad).isEmpty()) {
 			throw new IllegalArgumentException("Inscribí tu unidad en un festival antes de dar de alta empleados");
 		}
@@ -94,7 +132,9 @@ public class EmpleadoService {
 
 		asignarAFestivalesVigentes(empleado, unidad);
 
-		return enviarDatosAcceso(empleado, username, password);
+		boolean enviado = enviarDatosAcceso(empleado, username, password);
+
+		return enviado ? null : password;
 	}
 
 	@Transactional
