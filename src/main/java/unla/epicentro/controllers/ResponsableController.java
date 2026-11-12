@@ -31,6 +31,7 @@ import unla.epicentro.services.PedidoService;
 import unla.epicentro.services.UsuarioService;
 import unla.epicentro.services.EmpleadoService;
 import unla.epicentro.services.PlatoService;
+import unla.epicentro.services.CanonService;
 
 @Controller
 @RequestMapping("/responsable")
@@ -45,7 +46,7 @@ public class ResponsableController {
 	private final FestivalRepository festivalRepository;
 	private final CanonService canonService;
 
-	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository) {
+	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository, CanonService canonService) {
 
 		this.usuarioService = usuarioService;
 		this.unidadRepository = unidadRepository;

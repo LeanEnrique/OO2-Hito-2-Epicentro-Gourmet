@@ -11,6 +11,6 @@ import unla.epicentro.entities.UnidadDeVenta;
 public interface FestivalRepository extends JpaRepository<Festival, Long> {
 
 	List<Festival> findAllByOrderByFechaInicioAsc();
-
+	List<Festival> findByFechaFinGreaterThanEqualOrderByFechaInicioAsc(LocalDate fecha);
 	List<Festival> findByUnidadesContainingOrderByFechaInicioAsc(UnidadDeVenta unidad);
 }
