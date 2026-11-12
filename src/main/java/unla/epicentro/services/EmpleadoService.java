@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import unla.epicentro.dtos.EmpleadoDTO;
 import unla.epicentro.entities.AsignacionPersonal;
 import unla.epicentro.entities.Cajero;
+import unla.epicentro.entities.Categoria;
 import unla.epicentro.entities.Cocinero;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.Persona;
+import unla.epicentro.entities.Turno;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Usuario;
 import unla.epicentro.repositories.AsignacionPersonalRepository;
@@ -50,18 +52,55 @@ public class EmpleadoService {
 	}
 
 	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda, boolean activo) {
+		return buscar(unidad, busqueda, activo, null, null, null);
+	}
+
+	// Filtros combinables por atributo: tipo de empleado, turno y categoría, además de la búsqueda libre.
+	// Siempre trae únicamente las entidades que no están dadas de baja lógicamente (activo = true).
+	public List<Persona> buscar(UnidadDeVenta unidad, String busqueda, boolean activo,
+			String tipo, Turno turno, Categoria categoria) {
+
 		if (busqueda == null) {
 			busqueda = "";
 		}
 
-		return personaRepository.buscarEmpleadosDeUnidad(
-				unidad,
-				busqueda.trim(),
-				activo);
+		return personaRepository.buscarEmpleadosDeUnidad(unidad, busqueda.trim(), activo).stream()
+				.filter(empleado -> coincideTipo(empleado, tipo))
+				.filter(empleado -> coincideTurno(empleado, turno))
+				.filter(empleado -> coincideCategoria(empleado, categoria))
+				.toList();
 	}
 
+	private boolean coincideTipo(Persona empleado, String tipo) {
+		if (tipo == null || tipo.isBlank()) {
+			return true;
+		}
+		if ("CAJERO".equals(tipo)) {
+			return empleado instanceof Cajero;
+		}
+		if ("COCINERO".equals(tipo)) {
+			return empleado instanceof Cocinero;
+		}
+		return true;
+	}
+
+	private boolean coincideTurno(Persona empleado, Turno turno) {
+		if (turno == null) {
+			return true;
+		}
+		return empleado instanceof Cajero cajero && turno == cajero.getTurno();
+	}
+
+	private boolean coincideCategoria(Persona empleado, Categoria categoria) {
+		if (categoria == null) {
+			return true;
+		}
+		return empleado instanceof Cocinero cocinero && categoria == cocinero.getCategoria();
+	}
+
+	// Devuelve null si el mail de bienvenida salió bien, o la contraseña temporal si no se pudo enviar
 	@Transactional
-	public void crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
+	public String crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
 
 		validarDatos(dto, null);
 
@@ -71,6 +110,20 @@ public class EmpleadoService {
 
 		Festival festival = festivalRepository.findById(dto.getFestivalId())
 				.orElseThrow(() -> new IllegalArgumentException("El festival no existe"));
+
+		if (!festival.isPeriodoValido()) {
+			throw new IllegalArgumentException("El período del festival " + festival.getNombre()
+					+ " no es válido: la fecha de fin no puede ser anterior a la de inicio");
+		}
+
+		// Validación de carga: el empleado se asigna a un festival en el que la unidad está habilitada
+		boolean unidadHabilitada = festival.getUnidades().stream()
+				.anyMatch(u -> u.getId().equals(unidad.getId()));
+		if (!unidadHabilitada) {
+			throw new IllegalArgumentException(
+					"Tu unidad de venta no está habilitada en el festival " + festival.getNombre()
+							+ ". Inscribila primero.");
+		}
 
 		if (festival.getFechaFin().isBefore(LocalDate.now())) {
 			throw new IllegalArgumentException("No se puede asignar un empleado a un festival que ya terminó");
@@ -102,7 +155,9 @@ public class EmpleadoService {
 
 		asignacionRepository.save(asignacion);
 
-		enviarDatosAcceso(empleado, username, password);
+		boolean enviado = enviarDatosAcceso(empleado, username, password);
+
+		return enviado ? null : password;
 	}
 
 	@Transactional
@@ -324,7 +379,7 @@ public class EmpleadoService {
 		return password.toString();
 	}
 
-	private void enviarDatosAcceso(
+	private boolean enviarDatosAcceso(
 			Persona empleado,
 			String username,
 			String password) {
@@ -333,7 +388,7 @@ public class EmpleadoService {
 
 		String texto = "Hola " + empleado.getNombre() + ",\n\n" + "Se creó tu usuario para Epicentro Gourmet.\n\n" + "Usuario: " + username + "\n" + "Contraseña: " + password + "\n\n" + "Por seguridad, no compartas estos datos con otras personas.";
 
-		mailService.enviar(
+		return mailService.enviar(
 				empleado.getEmail(),
 				asunto,
 				texto);

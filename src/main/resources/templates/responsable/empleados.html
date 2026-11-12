@@ -24,7 +24,31 @@
             <input id="busqueda" type="text" name="busqueda" th:value="${busqueda}"
                 placeholder="Nombre, apellido, DNI o email">
 
-            <button type="submit" class="boton">Buscar</button>
+            <label for="tipo">Tipo</label>
+
+            <select id="tipo" name="tipo">
+                <option value="">Todos</option>
+                <option th:each="t : ${tipos}" th:value="${t}" th:text="${t}" th:selected="${tipo == t}"></option>
+            </select>
+
+            <label for="turno">Turno</label>
+
+            <select id="turno" name="turno">
+                <option value="">Todos</option>
+                <option th:each="t : ${turnos}" th:value="${t}"
+                    th:text="${t.name() == 'MANANA' ? 'Mañana' : 'Noche'}"
+                    th:selected="${turno != null and turno == t}"></option>
+            </select>
+
+            <label for="categoria">Categoría</label>
+
+            <select id="categoria" name="categoria">
+                <option value="">Todas</option>
+                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"
+                    th:selected="${categoria != null and categoria == c}"></option>
+            </select>
+
+            <button type="submit" class="boton">Filtrar</button>
 
             <a class="boton" th:href="@{/responsable/empleados}">Limpiar</a>
 

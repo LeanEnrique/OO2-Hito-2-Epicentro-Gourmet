@@ -55,6 +55,11 @@ public class PedidoService {
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("El festival elegido no está en curso para tu unidad"));
 
+		if (!festival.isPeriodoValido()) {
+			throw new IllegalArgumentException("El período del festival " + festival.getNombre()
+					+ " no es válido: la fecha de fin no puede ser anterior a la de inicio");
+		}
+
 		Pedido pedido = new Pedido();
 		pedido.setFecha(LocalDate.now()); // el pedido solo puede tener la fecha del día
 		pedido.setFestival(festival);
