@@ -1,11 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Mi liquidación')}"></head>
+<head th:replace="~{fragments :: head('Mi panel')}"></head>
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main class="angosto">
 		<h1 th:text="'Hola, ' + ${empleado.nombreCompleto}"></h1>
 		<p th:text="${empleado.rolLaboral} + ' · Ingreso: ' + ${#temporals.format(empleado.fechaIngreso, 'dd/MM/yyyy')}"></p>
+
+		<h2>Hoy</h2>
+		<section class="hoy activo" th:if="${actual != null}">
+			<p>Hoy trabajás en <strong th:text="${actual.festival.nombre}"></strong>
+				<span th:replace="~{fragments :: estadoFestival(${actual.festival})}"></span></p>
+			<p>Unidad: <strong th:text="${actual.unidad.nombreComercial}"></strong>
+				<span th:text="'(' + ${actual.unidad.tipo} + ' · ' + ${actual.unidad.codigo} + ')'"></span></p>
+			<p class="nota" th:text="'Del ' + ${#temporals.format(actual.festival.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(actual.festival.fechaFin, 'dd/MM/yyyy')}"></p>
+		</section>
+		<section class="hoy" th:if="${actual == null}">
+			<p>Hoy no tenés que trabajar en ningún festival.</p>
+			<p class="nota" th:if="${proxima != null}"
+				th:text="'Tu próximo festival: ' + ${proxima.festival.nombre} + ' en ' + ${proxima.unidad.nombreComercial} + ', desde el ' + ${#temporals.format(proxima.festival.fechaInicio, 'dd/MM/yyyy')}"></p>
+		</section>
+
+		<h2>Mis festivales</h2>
+		<p th:if="${historial.isEmpty()}">Todavía no tenés festivales asignados.</p>
+		<table th:unless="${historial.isEmpty()}">
+			<thead><tr><th>Festival</th><th>Unidad</th><th>Fechas</th><th>Estado</th></tr></thead>
+			<tbody>
+				<tr th:each="a : ${historial}">
+					<td th:text="${a.festival.nombre}"></td>
+					<td th:text="${a.unidad.nombreComercial}"></td>
+					<td th:text="${#temporals.format(a.festival.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(a.festival.fechaFin, 'dd/MM/yyyy')}"></td>
+					<td><span th:replace="~{fragments :: estadoFestival(${a.festival})}"></span></td>
+				</tr>
+			</tbody>
+		</table>
 
 		<h2>Liquidación de sueldo</h2>
 		<p th:if="${liquidaciones.isEmpty()}">Todavía no trabajaste en ningún festival.</p>
