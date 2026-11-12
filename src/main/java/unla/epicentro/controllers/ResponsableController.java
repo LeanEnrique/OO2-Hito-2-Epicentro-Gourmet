@@ -16,10 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import unla.epicentro.dtos.CanonDTO;
 import unla.epicentro.dtos.EmpleadoDTO;
 import unla.epicentro.dtos.PlatoDTO;
-import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Cajero;
 import unla.epicentro.entities.Cocinero;
@@ -44,9 +42,8 @@ public class ResponsableController {
 	private final EmpleadoService empleadoService;
 	private final PlatoService platoService;
 	private final FestivalRepository festivalRepository;
-	private final CanonService canonService;
 
-	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository, CanonService canonService) {
+	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository) {
 
 		this.usuarioService = usuarioService;
 		this.unidadRepository = unidadRepository;
@@ -55,7 +52,6 @@ public class ResponsableController {
 		this.empleadoService = empleadoService;
 		this.platoService = platoService;
 		this.festivalRepository = festivalRepository;
-		this.canonService = canonService;
 	}
 
 	@GetMapping
@@ -387,26 +383,4 @@ public class ResponsableController {
 
 		return dto;
 	}
-
-	@GetMapping("/canon")
-	public String canon(
-        @RequestParam Long festivalId,
-        Principal principal,
-        Model model) {
-
-    Festival festival = festivalRepository.findById(festivalId)
-        .orElseThrow(() -> new IllegalArgumentException("Festival no encontrado"));
-
-    UnidadDeVenta unidad = unidadDe(principal);
-
-    if (!festival.getUnidades().contains(unidad)) {
-        throw new IllegalArgumentException("La unidad no pertenece al festival seleccionado");
-    }
-
-    CanonDTO canon = canonService.obtenerCanon(unidad, festival);
-
-    model.addAttribute("festival", festival);
-    model.addAttribute("canon", canon);
-
-    return "responsable/canon";
-}}
+}

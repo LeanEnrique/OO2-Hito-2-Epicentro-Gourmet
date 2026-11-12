@@ -10,32 +10,48 @@
 
     <h1>Cálculo de Canon</h1>
 
-    <h2 th:text="${festival.nombre}"></h2>
+    <form th:action="@{/canon}" method="get">
 
-    <p>
-        <strong>Unidad:</strong>
-        <span th:text="${canon.nombreComercial}"></span>
-    </p>
+        <label for="festivalId">Seleccionar festival:</label>
 
-    <p>
-        <strong>Código:</strong>
-        <span th:text="${canon.codigo}"></span>
-    </p>
+        <select name="festivalId" id="festivalId" required>
+            <option value="">Seleccioná un festival</option>
 
-    <p>
-        <strong>Tipo:</strong>
-        <span th:text="${canon.tipo}"></span>
-    </p>
+            <option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}">
+            </option>
+        </select>
 
-    <p>
-        <strong>Canon:</strong>
-        $
-        <span th:text="${canon.canon}"></span>
-    </p>
+        <button type="submit">Calcular</button>
 
-    <a th:href="@{/responsable}">
-        Volver
-    </a>
+    </form>
+
+    <section th:if="${canon != null}">
+
+        <h2 th:text="${festival.nombre}"></h2>
+
+        <p>
+            <strong>Unidad:</strong>
+            <span th:text="${canon.nombreComercial}"></span>
+        </p>
+
+        <p>
+            <strong>Código:</strong>
+            <span th:text="${canon.codigo}"></span>
+        </p>
+
+        <p>
+            <strong>Tipo:</strong>
+            <span th:text="${canon.tipo}"></span>
+        </p>
+
+        <p>
+            <strong>Canon:</strong>
+            $<span th:text="${canon.canon}"></span>
+        </p>
+
+    </section>
+
+    <a th:href="@{/responsable}">Volver</a>
 
 </body>
 
