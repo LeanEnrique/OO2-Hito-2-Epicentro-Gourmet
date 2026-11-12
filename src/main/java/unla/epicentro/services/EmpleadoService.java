@@ -2,6 +2,8 @@ package unla.epicentro.services;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,19 +63,14 @@ public class EmpleadoService {
 	}
 
 	@Transactional
-	public void crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
+	// Devuelve true si se pudo enviar el mail con los datos de acceso
+	public boolean crear(EmpleadoDTO dto, UnidadDeVenta unidad) {
 
 		validarDatos(dto, null);
 
-		if (dto.getFestivalId() == null) {
-			throw new IllegalArgumentException("Debe seleccionar un festival");
-		}
-
-		Festival festival = festivalRepository.findById(dto.getFestivalId())
-				.orElseThrow(() -> new IllegalArgumentException("El festival no existe"));
-
-		if (festival.getFechaFin().isBefore(LocalDate.now())) {
-			throw new IllegalArgumentException("No se puede asignar un empleado a un festival que ya terminó");
+		// El empleado trabaja en los festivales de su unidad: tiene que haber al menos uno vigente
+		if (festivalesVigentes(unidad).isEmpty()) {
+			throw new IllegalArgumentException("Inscribí tu unidad en un festival antes de dar de alta empleados");
 		}
 
 		Persona empleado = crearPersona(dto);
@@ -95,14 +92,9 @@ public class EmpleadoService {
 
 		usuarioRepository.save(usuario);
 
-		AsignacionPersonal asignacion = new AsignacionPersonal();
-		asignacion.setPersona(empleado);
-		asignacion.setFestival(festival);
-		asignacion.setUnidad(unidad);
+		asignarAFestivalesVigentes(empleado, unidad);
 
-		asignacionRepository.save(asignacion);
-
-		enviarDatosAcceso(empleado, username, password);
+		return enviarDatosAcceso(empleado, username, password);
 	}
 
 	@Transactional
@@ -141,6 +133,47 @@ public class EmpleadoService {
 		}
 	}
 
+	// Festivales de la unidad que todavía no terminaron
+	private List<Festival> festivalesVigentes(UnidadDeVenta unidad) {
+		LocalDate hoy = LocalDate.now();
+		return festivalRepository.findByUnidadesContainingOrderByFechaInicioAsc(unidad).stream()
+				.filter(f -> !f.getFechaFin().isBefore(hoy))
+				.toList();
+	}
+
+	// El empleado pertenece a la unidad y trabaja en todos sus festivales vigentes
+	private void asignarAFestivalesVigentes(Persona empleado, UnidadDeVenta unidad) {
+		for (Festival festival : festivalesVigentes(unidad)) {
+			asignar(empleado, unidad, festival);
+		}
+	}
+
+	// Cuando la unidad se inscribe a un festival, todo su personal activo pasa a trabajar en él
+	@Transactional
+	public void sumarPersonalAFestival(UnidadDeVenta unidad, Festival festival) {
+		for (Persona empleado : personaRepository.buscarEmpleadosDeUnidad(unidad, "", true)) {
+			asignar(empleado, unidad, festival);
+		}
+	}
+
+	private void asignar(Persona empleado, UnidadDeVenta unidad, Festival festival) {
+		if (asignacionRepository.existsByPersonaAndFestival(empleado, festival)) {
+			return;
+		}
+		AsignacionPersonal asignacion = new AsignacionPersonal();
+		asignacion.setPersona(empleado);
+		asignacion.setFestival(festival);
+		asignacion.setUnidad(unidad);
+		asignacionRepository.save(asignacion);
+	}
+
+	// Festivales en los que trabaja cada empleado de la unidad (id del empleado -> festivales)
+	public Map<Long, List<Festival>> festivalesPorEmpleado(UnidadDeVenta unidad) {
+		return asignacionRepository.findByUnidadOrderByFestivalFechaInicioAsc(unidad).stream()
+				.collect(Collectors.groupingBy(a -> a.getPersona().getId(),
+						Collectors.mapping(AsignacionPersonal::getFestival, Collectors.toList())));
+	}
+
 	@Transactional
 	public void darDeBaja(Long id, UnidadDeVenta unidad) {
 
@@ -168,6 +201,7 @@ public class EmpleadoService {
 
 		empleado.setActivo(true);
 		personaRepository.save(empleado);
+		asignarAFestivalesVigentes(empleado, unidad);
 
 		Usuario usuario = usuarioRepository.findByPersona(empleado)
 				.orElseThrow(() -> new IllegalStateException("El empleado no tiene usuario asociado"));
@@ -324,7 +358,7 @@ public class EmpleadoService {
 		return password.toString();
 	}
 
-	private void enviarDatosAcceso(
+	private boolean enviarDatosAcceso(
 			Persona empleado,
 			String username,
 			String password) {
@@ -333,7 +367,7 @@ public class EmpleadoService {
 
 		String texto = "Hola " + empleado.getNombre() + ",\n\n" + "Se creó tu usuario para Epicentro Gourmet.\n\n" + "Usuario: " + username + "\n" + "Contraseña: " + password + "\n\n" + "Por seguridad, no compartas estos datos con otras personas.";
 
-		mailService.enviar(
+		return mailService.enviar(
 				empleado.getEmail(),
 				asunto,
 				texto);

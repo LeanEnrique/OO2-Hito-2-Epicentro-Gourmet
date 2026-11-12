@@ -7,7 +7,6 @@
     <header th:replace="~{fragments :: nav}"></header>
 
     <main>
-        <p><a class="boton secundario" th:href="@{/admin(festival=${festivalSeleccionado?.id})}">← Volver al panel</a></p>
         <h1>Rentabilidad neta</h1>
 
         <p>
@@ -45,11 +44,15 @@
 
                 <h3>Período de consulta</h3>
 
+                <p class="nota" th:text="'El festival va del ' + ${#temporals.format(festivalSeleccionado.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(festivalSeleccionado.fechaFin, 'dd/MM/yyyy')} + '. Las fechas tienen que estar dentro de ese rango.'"></p>
+
                 <label for="desde">Desde</label>
-                <input type="date" id="desde" name="desde" th:value="${desde}">
+                <input type="date" id="desde" name="desde" th:value="${desde}"
+                    th:min="${festivalSeleccionado.fechaInicio}" th:max="${festivalSeleccionado.fechaFin}">
 
                 <label for="hasta">Hasta</label>
-                <input type="date" id="hasta" name="hasta" th:value="${hasta}">
+                <input type="date" id="hasta" name="hasta" th:value="${hasta}"
+                    th:min="${festivalSeleccionado.fechaInicio}" th:max="${festivalSeleccionado.fechaFin}">
 
                 <p>
                     Dejá ambas fechas vacías para consultar

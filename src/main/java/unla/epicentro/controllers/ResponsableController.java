@@ -3,9 +3,11 @@ package unla.epicentro.controllers;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +30,12 @@ import unla.epicentro.entities.Cocinero;
 import unla.epicentro.entities.Persona;
 import unla.epicentro.repositories.PlatoRepository;
 import unla.epicentro.repositories.UnidadDeVentaRepository;
-import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.services.PedidoService;
 import unla.epicentro.services.UsuarioService;
 import unla.epicentro.services.EmpleadoService;
 import unla.epicentro.services.FestivalService;
+import unla.epicentro.services.PlatoEstrellaService;
+import unla.epicentro.services.RentabilidadService;
 import unla.epicentro.services.PlatoService;
 
 @Controller
@@ -45,10 +48,11 @@ public class ResponsableController {
 	private final PedidoService pedidoService;
 	private final EmpleadoService empleadoService;
 	private final PlatoService platoService;
-	private final FestivalRepository festivalRepository;
 	private final FestivalService festivalService;
+	private final RentabilidadService rentabilidadService;
+	private final PlatoEstrellaService platoEstrellaService;
 
-	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository, FestivalService festivalService) {
+	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalService festivalService, RentabilidadService rentabilidadService, PlatoEstrellaService platoEstrellaService) {
 
 		this.usuarioService = usuarioService;
 		this.unidadRepository = unidadRepository;
@@ -56,8 +60,9 @@ public class ResponsableController {
 		this.pedidoService = pedidoService;
 		this.empleadoService = empleadoService;
 		this.platoService = platoService;
-		this.festivalRepository = festivalRepository;
 		this.festivalService = festivalService;
+		this.rentabilidadService = rentabilidadService;
+		this.platoEstrellaService = platoEstrellaService;
 	}
 
 	@GetMapping
@@ -70,8 +75,12 @@ public class ResponsableController {
 		return "responsable/inicio";
 	}
 
+	// Detalle del festival para la unidad: pedidos, canon, plato estrella y rentabilidad neta (total o entre fechas)
 	@GetMapping("/festivales/{id}")
-	public String detalleFestival(@PathVariable Long id, Principal principal, Model model, RedirectAttributes redirect) {
+	public String detalleFestival(@PathVariable Long id,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+			Principal principal, Model model, RedirectAttributes redirect) {
 		UnidadDeVenta unidad = unidadDe(principal);
 		try {
 			Festival festival = festivalService.festivalDe(unidad, id);
@@ -79,6 +88,18 @@ public class ResponsableController {
 			model.addAttribute("festival", festival);
 			model.addAttribute("pedidos", pedidos);
 			model.addAttribute("recaudacion", pedidos.stream().map(Pedido::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add));
+			model.addAttribute("platoEstrella", platoEstrellaService.obtenerPlatoEstrella(unidad, festival));
+			model.addAttribute("desde", desde);
+			model.addAttribute("hasta", hasta);
+			model.addAttribute("rentabilidad", rentabilidadService.calcularRentabilidad(festival, unidad));
+			if (desde != null || hasta != null) {
+				try {
+					model.addAttribute("rentabilidadPeriodo",
+							rentabilidadService.calcularRentabilidadEntreFechas(festival, unidad, desde, hasta));
+				} catch (IllegalArgumentException e) {
+					model.addAttribute("errorPeriodo", e.getMessage());
+				}
+			}
 			return "responsable/festival";
 		} catch (IllegalArgumentException e) {
 			redirect.addFlashAttribute("error", e.getMessage());
@@ -140,15 +161,16 @@ public class ResponsableController {
 				"bajas",
 				empleadoService.buscar(unidad, "", false));
 		model.addAttribute("busqueda", busqueda);
+		model.addAttribute("festivalesPorEmpleado", empleadoService.festivalesPorEmpleado(unidad));
 
 		return "responsable/empleados";
 	}
 
 	@GetMapping("/empleados/nuevo")
-	public String nuevoEmpleado(Model model) {
+	public String nuevoEmpleado(Principal principal, Model model) {
 
 		model.addAttribute("empleadoDTO", new EmpleadoDTO());
-		model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
+		model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidadDe(principal)));
 
 		return "responsable/form-empleado";
 	}
@@ -158,20 +180,24 @@ public class ResponsableController {
 
 		if (result.hasErrors()) {
 
-			model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
+			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidadDe(principal)));
 			return "responsable/form-empleado";
 		}
 
 		try {
-			empleadoService.crear(dto, unidadDe(principal));
-			redirect.addFlashAttribute("mensaje", "Empleado creado correctamente. Se enviaron sus datos de acceso por email.");
+			boolean mailEnviado = empleadoService.crear(dto, unidadDe(principal));
+			if (mailEnviado) {
+				redirect.addFlashAttribute("mensaje", "Empleado creado correctamente. Se enviaron sus datos de acceso por email.");
+			} else {
+				redirect.addFlashAttribute("error", "El empleado se creó, pero no se pudo enviar el email con sus datos de acceso. Revisá la configuración de mail.");
+			}
 
 			return "redirect:/responsable/empleados";
 
 		} catch (IllegalArgumentException e) {
 
 			model.addAttribute("error", e.getMessage());
-			model.addAttribute("festivales", festivalRepository.findAllByOrderByFechaInicioAsc());
+			model.addAttribute("festivales", festivalService.festivalesVigentesDe(unidadDe(principal)));
 
 			return "responsable/form-empleado";
 		}

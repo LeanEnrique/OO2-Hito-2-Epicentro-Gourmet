@@ -24,7 +24,7 @@ public class Cocinero extends Persona {
 
 	@Override
 	public String getRolLaboral() {
-		return "Cocina - " + categoria;
+		return "Cocina - " + categoria.getDescripcion();
 	}
 
 	// (sueldo base + plus por categoría) * factor según duración del festival
@@ -40,6 +40,6 @@ public class Cocinero extends Persona {
 
 	@Override
 	public String getConceptoAdicional(Festival festival) {
-		return "Plus por categoría (" + categoria + ")";
+		return "Plus por categoría (" + categoria.getDescripcion() + ")";
 	}
 }

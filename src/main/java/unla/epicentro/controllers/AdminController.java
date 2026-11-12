@@ -101,8 +101,9 @@ public String rentabilidad(
 
     model.addAttribute("festivales", festivales);
 
+    // Sin festival elegido se muestra el que está en curso
     Festival festival = festivalId == null
-            ? null
+            ? porDefecto(festivales)
             : festivalRepository.findById(festivalId).orElse(null);
 
     model.addAttribute("festivalSeleccionado", festival);
@@ -168,8 +169,9 @@ public String platoEstrella(
     model.addAttribute("festivales", festivales);
 	model.addAttribute("unidadId", unidadId);
 
+    // Sin festival elegido se muestra el que está en curso
     Festival festival = festivalId == null
-            ? null
+            ? porDefecto(festivales)
             : festivalRepository.findById(festivalId).orElse(null);
 
     model.addAttribute("festivalSeleccionado", festival);

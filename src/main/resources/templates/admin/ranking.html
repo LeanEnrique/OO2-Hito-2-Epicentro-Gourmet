@@ -4,8 +4,17 @@
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main>
-		<p><a class="boton secundario" th:href="@{/admin(festival=${seleccionado?.id})}">← Volver al panel</a></p>
 		<h1>Recaudación y ranking</h1>
+
+		<form th:action="@{/admin/ranking}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festival" onchange="this.form.submit()">
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${seleccionado != null and f.id == seleccionado.id}"></option>
+				</select>
+			</label>
+			<noscript><button type="submit">Ver</button></noscript>
+		</form>
 
 		<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
 

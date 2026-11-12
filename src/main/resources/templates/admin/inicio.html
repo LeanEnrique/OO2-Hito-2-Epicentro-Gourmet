@@ -4,7 +4,7 @@
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main>
-		<h1>Panel de administración</h1>
+		<h1>Festivales</h1>
 		<p th:if="${festivales.isEmpty()}">Todavía no hay festivales cargados.</p>
 
 		<th:block th:unless="${festivales.isEmpty()}">
@@ -25,14 +25,6 @@
 				<p>
 					<span th:text="${seleccionado.temporada} + ' · ' + ${#temporals.format(seleccionado.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(seleccionado.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${seleccionado.cantidadDias} + ' días'"></span>
 					<span th:replace="~{fragments :: estadoFestival(${seleccionado})}"></span>
-				</p>
-
-				<h3>Reportes</h3>
-				<p class="acciones-form">
-					<a class="boton" th:href="@{/admin/ranking(festival=${seleccionado.id})}">Recaudación y ranking</a>
-					<a class="boton" th:href="@{/admin/mayor-canon(festival=${seleccionado.id})}">Unidades con mayor canon</a>
-					<a class="boton" th:href="@{/admin/rentabilidad(festivalId=${seleccionado.id})}">Rentabilidad neta</a>
-					<a class="boton" th:href="@{/admin/plato-estrella(festivalId=${seleccionado.id})}">Plato estrella</a>
 				</p>
 
 				<h3 th:text="'Unidades de venta (' + ${seleccionado.unidades.size()} + ')'"></h3>
