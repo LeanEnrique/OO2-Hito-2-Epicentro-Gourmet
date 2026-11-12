@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import unla.epicentro.dtos.CanonDTO;
 import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.repositories.FestivalRepository;
@@ -56,22 +55,22 @@ public class CanonController {
             return "responsable/canon";
         }
 
-        Festival festival = festivalRepository.findById(festivalId)
-                .orElseThrow(() -> new IllegalArgumentException("Festival no encontrado"));
-
-        boolean pertenece = festival.getUnidades().stream()
-                .anyMatch(u -> u.getId().equals(unidad.getId()));
-
-        if (!pertenece) {
-            throw new IllegalArgumentException(
-                    "La unidad no pertenece al festival seleccionado");
+        // Solo se calcula para festivales en los que participa la unidad
+        Festival festival = festivales.stream()
+                .filter(f -> f.getId().equals(festivalId))
+                .findFirst()
+                .orElse(null);
+        if (festival == null) {
+            model.addAttribute("error", "Tu unidad no está inscripta en ese festival");
+            return "responsable/canon";
         }
 
-        CanonDTO canon = canonService.obtenerCanon(unidad, festival);
-
-        model.addAttribute("unidad", unidad);
-        model.addAttribute("festival", festival);
-        model.addAttribute("canon", canon);
+        try {
+            model.addAttribute("canon", canonService.obtenerCanon(unidad, festival));
+            model.addAttribute("festival", festival);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+        }
 
         return "responsable/canon";
     }

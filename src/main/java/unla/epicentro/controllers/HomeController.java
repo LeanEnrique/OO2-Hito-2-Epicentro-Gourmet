@@ -1,8 +1,5 @@
 package unla.epicentro.controllers;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import unla.epicentro.dtos.RegistroUnidadDTO;
-import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.services.MailService;
@@ -63,7 +59,6 @@ public class HomeController {
 	@GetMapping("/registro")
 	public String registroForm(Model model) {
 		model.addAttribute("registro", new RegistroUnidadDTO());
-		model.addAttribute("festivales", festivalesNoTerminados());
 		return "registro";
 	}
 
@@ -83,12 +78,7 @@ public class HomeController {
 				model.addAttribute("error", e.getMessage());
 			}
 		}
-		model.addAttribute("festivales", festivalesNoTerminados());
 		return "registro";
-	}
-
-	private List<Festival> festivalesNoTerminados() {
-		return festivalRepository.findByFechaFinGreaterThanEqualOrderByFechaInicioAsc(LocalDate.now());
 	}
 
 	private boolean tieneRol(Authentication auth, String rol) {

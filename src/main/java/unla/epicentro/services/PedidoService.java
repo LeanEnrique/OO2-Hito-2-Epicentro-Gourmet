@@ -41,6 +41,12 @@ public class PedidoService {
 		return pedidoRepository.findByUnidadOrderByFechaDescIdDesc(unidad);
 	}
 
+	public List<Pedido> pedidosDe(UnidadDeVenta unidad, Festival festival) {
+		return pedidosDe(unidad).stream()
+				.filter(p -> p.getFestival().getId().equals(festival.getId()))
+				.toList();
+	}
+
 	// cantidades: id de plato -> cantidad pedida
 	@Transactional
 	public Pedido crear(UnidadDeVenta unidad, Long festivalId, Map<Long, Integer> cantidades) {

@@ -1,7 +1,9 @@
 package unla.epicentro.controllers;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import unla.epicentro.dtos.EmpleadoDTO;
 import unla.epicentro.dtos.PlatoDTO;
+import unla.epicentro.entities.Festival;
+import unla.epicentro.entities.Pedido;
 import unla.epicentro.entities.UnidadDeVenta;
 import unla.epicentro.entities.Cajero;
 import unla.epicentro.entities.Cocinero;
@@ -28,8 +32,8 @@ import unla.epicentro.repositories.FestivalRepository;
 import unla.epicentro.services.PedidoService;
 import unla.epicentro.services.UsuarioService;
 import unla.epicentro.services.EmpleadoService;
+import unla.epicentro.services.FestivalService;
 import unla.epicentro.services.PlatoService;
-import unla.epicentro.services.CanonService;
 
 @Controller
 @RequestMapping("/responsable")
@@ -42,8 +46,9 @@ public class ResponsableController {
 	private final EmpleadoService empleadoService;
 	private final PlatoService platoService;
 	private final FestivalRepository festivalRepository;
+	private final FestivalService festivalService;
 
-	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository) {
+	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalRepository festivalRepository, FestivalService festivalService) {
 
 		this.usuarioService = usuarioService;
 		this.unidadRepository = unidadRepository;
@@ -52,6 +57,7 @@ public class ResponsableController {
 		this.empleadoService = empleadoService;
 		this.platoService = platoService;
 		this.festivalRepository = festivalRepository;
+		this.festivalService = festivalService;
 	}
 
 	@GetMapping
@@ -59,8 +65,36 @@ public class ResponsableController {
 		UnidadDeVenta unidad = unidadDe(principal);
 		model.addAttribute("unidad", unidad);
 		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrueOrderByNombreAsc(unidad));
-		model.addAttribute("pedidos", pedidoService.pedidosDe(unidad));
+		model.addAttribute("misFestivales", festivalService.festivalesDe(unidad));
+		model.addAttribute("festivalesDisponibles", festivalService.festivalesDisponibles(unidad));
 		return "responsable/inicio";
+	}
+
+	@GetMapping("/festivales/{id}")
+	public String detalleFestival(@PathVariable Long id, Principal principal, Model model, RedirectAttributes redirect) {
+		UnidadDeVenta unidad = unidadDe(principal);
+		try {
+			Festival festival = festivalService.festivalDe(unidad, id);
+			List<Pedido> pedidos = pedidoService.pedidosDe(unidad, festival);
+			model.addAttribute("festival", festival);
+			model.addAttribute("pedidos", pedidos);
+			model.addAttribute("recaudacion", pedidos.stream().map(Pedido::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add));
+			return "responsable/festival";
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+			return "redirect:/responsable";
+		}
+	}
+
+	@PostMapping("/festivales")
+	public String inscribirseAFestival(Principal principal, @RequestParam Long festivalId, RedirectAttributes redirect) {
+		try {
+			var festival = festivalService.asociar(unidadDe(principal), festivalId);
+			redirect.addFlashAttribute("mensaje", "Tu unidad quedó inscripta en " + festival.getNombre());
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+		}
+		return "redirect:/responsable";
 	}
 
 	@GetMapping("/pedidos/nuevo")
@@ -84,7 +118,7 @@ public class ResponsableController {
 			});
 			pedidoService.crear(unidadDe(principal), festivalId, cantidades);
 			redirect.addFlashAttribute("mensaje", "Pedido registrado");
-			return "redirect:/responsable";
+			return "redirect:/responsable/festivales/" + festivalId;
 		} catch (IllegalArgumentException e) {
 			redirect.addFlashAttribute("error", e.getMessage());
 			return "redirect:/responsable/pedidos/nuevo";

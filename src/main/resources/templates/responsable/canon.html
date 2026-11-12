@@ -1,58 +1,39 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Cálculo de Canon</title>
-</head>
-
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Cálculo de canon')}"></head>
 <body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable}">← Volver a mi unidad</a></p>
+		<h1>Cálculo de canon</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
 
-    <h1>Cálculo de Canon</h1>
+		<p th:if="${festivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival.</p>
+		<form th:unless="${festivales.isEmpty()}" th:action="@{/canon}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festivalId" required>
+					<option value="">Seleccioná un festival</option>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${festival != null and f.id == festival.id}"></option>
+				</select>
+			</label>
+			<button type="submit">Calcular</button>
+		</form>
 
-    <form th:action="@{/canon}" method="get">
-
-        <label for="festivalId">Seleccionar festival:</label>
-
-        <select name="festivalId" id="festivalId" required>
-            <option value="">Seleccioná un festival</option>
-
-            <option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}">
-            </option>
-        </select>
-
-        <button type="submit">Calcular</button>
-
-    </form>
-
-    <section th:if="${canon != null}">
-
-        <h2 th:text="${festival.nombre}"></h2>
-
-        <p>
-            <strong>Unidad:</strong>
-            <span th:text="${canon.nombreComercial}"></span>
-        </p>
-
-        <p>
-            <strong>Código:</strong>
-            <span th:text="${canon.codigo}"></span>
-        </p>
-
-        <p>
-            <strong>Tipo:</strong>
-            <span th:text="${canon.tipo}"></span>
-        </p>
-
-        <p>
-            <strong>Canon:</strong>
-            $<span th:text="${canon.canon}"></span>
-        </p>
-
-    </section>
-
-    <a th:href="@{/responsable}">Volver</a>
-
+		<section th:if="${canon != null}">
+			<h2 th:text="${festival.nombre}"></h2>
+			<table>
+				<thead><tr><th>Unidad</th><th>Código</th><th>Tipo</th><th class="monto">Canon</th></tr></thead>
+				<tbody>
+					<tr>
+						<td th:text="${canon.nombreComercial}"></td>
+						<td th:text="${canon.codigo}"></td>
+						<td th:text="${canon.tipo}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(canon.canon, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
 </body>
-
 </html>

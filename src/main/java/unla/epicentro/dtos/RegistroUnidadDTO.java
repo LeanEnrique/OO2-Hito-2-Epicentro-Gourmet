@@ -57,9 +57,6 @@ public class RegistroUnidadDTO {
 	@Positive(message = "La superficie debe ser mayor a 0")
 	private BigDecimal superficie;
 
-	@NotNull(message = "Elegí un festival")
-	private Long festivalId;
-
 	@NotBlank(message = "Elegí el tipo de unidad")
 	private String tipo; // FOOD_TRUCK o PUESTO
 
