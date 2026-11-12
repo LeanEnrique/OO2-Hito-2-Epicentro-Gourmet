@@ -29,6 +29,7 @@ import unla.epicentro.services.PedidoService;
 import unla.epicentro.services.UsuarioService;
 import unla.epicentro.services.EmpleadoService;
 import unla.epicentro.services.PlatoService;
+import unla.epicentro.services.CanonService;
 
 @Controller
 @RequestMapping("/responsable")
@@ -52,7 +53,6 @@ public class ResponsableController {
 		this.platoService = platoService;
 		this.festivalRepository = festivalRepository;
 	}
-
 
 	@GetMapping
 	public String inicio(Principal principal, Model model) {

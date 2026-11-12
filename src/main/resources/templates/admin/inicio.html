@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments :: head('Administración')}"></head>
+
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main>
@@ -9,37 +11,79 @@
 
 		<th:block th:unless="${festivales.isEmpty()}">
 			<form th:action="@{/admin}" method="get">
-				<label>Festival
-					<select name="festival" onchange="this.form.submit()">
-						<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
-							th:selected="${seleccionado != null and f.id == seleccionado.id}"></option>
-					</select>
-				</label>
-				<noscript><button type="submit">Ver</button></noscript>
-			</form>
 
-			<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
+				<p class="error" th:if="${seleccionado == null}">El festival elegido no existe.</p>
 
-			<section th:if="${seleccionado != null}">
-				<h2 th:text="${seleccionado.nombre}"></h2>
-				<p th:text="${seleccionado.temporada} + ' · ' + ${#temporals.format(seleccionado.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(seleccionado.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${seleccionado.cantidadDias} + ' días · ' + ${seleccionado.unidades.size()} + (${seleccionado.unidades.size() == 1} ? ' unidad' : ' unidades')"></p>
+				<section th:if="${seleccionado != null}">
+					<form th:action="@{/admin}" method="get">
+						<label>Festival
+							<select name="festival" onchange="this.form.submit()">
+								<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+									th:selected="${seleccionado != null and f.id == seleccionado.id}">
+								</option>
+							</select>
+						</label>
 
-				<h3>Unidades de venta</h3>
-				<p th:if="${seleccionado.unidades.isEmpty()}">Sin unidades registradas.</p>
-				<table th:unless="${seleccionado.unidades.isEmpty()}">
-					<thead><tr><th>Código</th><th>Nombre comercial</th><th>Tipo</th><th>Superficie</th><th>Responsable</th></tr></thead>
-					<tbody>
-						<tr th:each="u : ${seleccionado.unidades}">
-							<td th:text="${u.codigo}"></td>
-							<td th:text="${u.nombreComercial}"></td>
-							<td th:text="${u.tipo}"></td>
-							<td th:text="${u.superficie} + ' m²'"></td>
-							<td th:text="${u.responsable.nombreCompleto}"></td>
-						</tr>
-					</tbody>
-				</table>
-			</section>
+						<label for="x">Cantidad de unidades:</label>
+						<input type="number" id="x" name="x" min="1" th:value="${x}">
+
+						<button type="submit">Consultar</button>
+					</form>
+					<h2 th:text="${seleccionado.nombre}"></h2>
+					<p
+						th:text="${seleccionado.temporada} + ' · ' + ${#temporals.format(seleccionado.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(seleccionado.fechaFin, 'dd/MM/yyyy')} + ' · ' + ${seleccionado.cantidadDias} + ' días · ' + ${seleccionado.unidades.size()} + (${seleccionado.unidades.size() == 1} ? ' unidad' : ' unidades')">
+					</p>
+
+					<h3>Unidades de venta</h3>
+					<p th:if="${seleccionado.unidades.isEmpty()}">Sin unidades registradas.</p>
+					<table th:unless="${seleccionado.unidades.isEmpty()}">
+						<thead>
+							<tr>
+								<th>Código</th>
+								<th>Nombre comercial</th>
+								<th>Tipo</th>
+								<th>Superficie</th>
+								<th>Responsable</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="u : ${seleccionado.unidades}">
+								<td th:text="${u.codigo}"></td>
+								<td th:text="${u.nombreComercial}"></td>
+								<td th:text="${u.tipo}"></td>
+								<td th:text="${u.superficie} + ' m²'"></td>
+								<td th:text="${u.responsable.nombreCompleto}"></td>
+							</tr>
+						</tbody>
+					</table>
+					<h3>Unidades con mayor canon</h3>
+
+					<p th:if="${mayoresCanon == null or mayoresCanon.isEmpty()}">
+						No hay unidades para mostrar.
+					</p>
+
+					<table th:if="${mayoresCanon != null and !mayoresCanon.isEmpty()}">
+						<thead>
+							<tr>
+								<th>Nombre comercial</th>
+								<th>Código</th>
+								<th>Tipo</th>
+								<th>Canon</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr th:each="u : ${mayoresCanon}">
+								<td th:text="${u.nombreComercial}"></td>
+								<td th:text="${u.codigo}"></td>
+								<td th:text="${u.tipo}"></td>
+								<td th:text="'$ ' + ${#numbers.formatDecimal(u.canon, 1, 'POINT', 2, 'COMMA')}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
 		</th:block>
 	</main>
 </body>
+
 </html>

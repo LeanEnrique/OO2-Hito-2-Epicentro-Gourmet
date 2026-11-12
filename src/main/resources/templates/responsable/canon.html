@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cálculo de Canon</title>
+</head>
+
+<body>
+
+    <h1>Cálculo de Canon</h1>
+
+    <form th:action="@{/canon}" method="get">
+
+        <label for="festivalId">Seleccionar festival:</label>
+
+        <select name="festivalId" id="festivalId" required>
+            <option value="">Seleccioná un festival</option>
+
+            <option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}">
+            </option>
+        </select>
+
+        <button type="submit">Calcular</button>
+
+    </form>
+
+    <section th:if="${canon != null}">
+
+        <h2 th:text="${festival.nombre}"></h2>
+
+        <p>
+            <strong>Unidad:</strong>
+            <span th:text="${canon.nombreComercial}"></span>
+        </p>
+
+        <p>
+            <strong>Código:</strong>
+            <span th:text="${canon.codigo}"></span>
+        </p>
+
+        <p>
+            <strong>Tipo:</strong>
+            <span th:text="${canon.tipo}"></span>
+        </p>
+
+        <p>
+            <strong>Canon:</strong>
+            $<span th:text="${canon.canon}"></span>
+        </p>
+
+    </section>
+
+    <a th:href="@{/responsable}">Volver</a>
+
+</body>
+
+</html>
