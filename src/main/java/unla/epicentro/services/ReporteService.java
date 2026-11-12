@@ -1,4 +1,4 @@
-package unla.epicentro.services;
+﻿package unla.epicentro.services;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,14 +19,22 @@ public class ReporteService {
         this.pedidoRepository = pedidoRepository;
     }
 
-    public ReporteVentaDTO calcularRecaudacion(Festival festival) {
+    public ReporteVentaDTO obtenerRecaudacion(Festival festival) {
+
+        if (festival == null) {
+            throw new IllegalArgumentException("El festival es obligatorio");
+        }
 
         List<Pedido> pedidos = pedidoRepository.findByFestival(festival);
 
-        BigDecimal recaudacion = pedidos.stream()
-            .map(Pedido::getTotal)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = pedidos.stream()
+                .map(Pedido::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return new ReporteVentaDTO(festival.getId(), festival.getNombre(), recaudacion);
+        return new ReporteVentaDTO(
+                festival.getId(),
+                festival.getNombre(),
+                total
+        );
     }
 }
