@@ -27,7 +27,12 @@
 					<a th:href="@{/responsable}">Inicio</a>
 					<a th:href="@{/responsable/empleados}">Empleados</a>
 					<a th:href="@{/responsable/platos}">Platos</a>
+					<a th:href="@{/responsable/reportes}">Reportes</a>
 					<a th:href="@{/canon}">Calcular canon</a>
+				</span>
+				<span sec:authorize="hasRole('EMPLEADO')">
+					<a th:href="@{/empleado}">Mi panel</a>
+					<a th:href="@{/empleado/caja}">Cerrar caja</a>
 				</span>
 				<form th:action="@{/logout}" method="post" class="inline">
 					<button type="submit">Salir</button>

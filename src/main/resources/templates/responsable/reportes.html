@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reporte de recaudación')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable}">← Volver a mi unidad</a></p>
+		<h1>Reporte de recaudación</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<p th:text="'Unidad: ' + ${unidad.nombreComercial} + ' (' + ${unidad.codigo} + ')'"></p>
+
+		<p th:if="${festivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival.</p>
+
+		<form th:unless="${festivales.isEmpty()}" th:action="@{/responsable/reportes}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festivalId" onchange="this.form.submit()">
+					<option value="">Seleccioná un festival</option>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${festival != null and f.id == festival.id}"></option>
+				</select>
+			</label>
+			<noscript><button type="submit">Consultar</button></noscript>
+		</form>
+
+		<section th:if="${reporte != null}">
+			<h2 th:text="${reporte.nombreFestival}"></h2>
+			<table>
+				<thead><tr><th>Concepto</th><th class="monto">Monto</th></tr></thead>
+				<tbody>
+					<tr>
+						<td>Recaudación total del festival</td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr class="total">
+						<td th:text="'Recaudación de ' + ${unidad.nombreComercial}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(recaudacionUnidad, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		<h2>Otros reportes</h2>
+		<p class="acciones-form">
+			<a class="boton" th:href="@{/responsable/reportes/rentabilidad(festivalId=${festival?.id})}">Rentabilidad neta</a>
+			<a class="boton" th:href="@{/responsable/reportes/plato-estrella(festivalId=${festival?.id})}">Plato estrella</a>
+			<a class="boton" th:href="@{/responsable/reportes/liquidacion(festivalId=${festival?.id})}">Liquidación de haberes</a>
+		</p>
+	</main>
+</body>
+</html>

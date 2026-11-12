@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Plato estrella')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable/reportes}">← Volver a reportes</a></p>
+		<h1>Plato estrella</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<p th:text="'Unidad: ' + ${unidad.nombreComercial} + ' (' + ${unidad.codigo} + ')'"></p>
+
+		<p th:if="${festivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival.</p>
+
+		<form th:unless="${festivales.isEmpty()}" th:action="@{/responsable/reportes/plato-estrella}" method="get" class="en-linea">
+			<label>Festival
+				<select name="festivalId" onchange="this.form.submit()">
+					<option value="">Seleccioná un festival</option>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${festival != null and f.id == festival.id}"></option>
+				</select>
+			</label>
+			<noscript><button type="submit">Consultar</button></noscript>
+		</form>
+
+		<p class="error" th:if="${error}" th:text="${error}"></p>
+
+		<section th:if="${platoEstrella != null}">
+			<h2>Plato más pedido</h2>
+			<table>
+				<tbody>
+					<tr><th>Nombre</th><td th:text="${platoEstrella.nombre}"></td></tr>
+					<tr><th>Precio de venta</th><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(platoEstrella.precio, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+					<tr><th>Costo de producción</th><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(platoEstrella.costo, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<p th:if="${festival != null and platoEstrella == null and error == null}">
+			No hay pedidos registrados para tu unidad en ese festival.
+		</p>
+	</main>
+</body>
+</html>

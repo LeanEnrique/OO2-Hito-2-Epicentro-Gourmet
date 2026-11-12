@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Rentabilidad de mi unidad')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<p><a class="boton secundario" th:href="@{/responsable/reportes}">← Volver a reportes</a></p>
+		<h1>Rentabilidad neta</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<p th:text="'Unidad: ' + ${unidad.nombreComercial} + ' (' + ${unidad.codigo} + ')'"></p>
+
+		<p th:if="${festivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival.</p>
+
+		<form th:unless="${festivales.isEmpty()}" th:action="@{/responsable/reportes/rentabilidad}" method="get">
+			<label>Festival
+				<select name="festivalId" onchange="this.form.submit()">
+					<option value="">Seleccioná un festival</option>
+					<option th:each="f : ${festivales}" th:value="${f.id}" th:text="${f.nombre}"
+						th:selected="${festival != null and f.id == festival.id}"></option>
+				</select>
+			</label>
+
+			<div th:if="${festival != null}">
+				<label>Desde <input type="date" name="desde" th:value="${desde}"></label>
+				<label>Hasta <input type="date" name="hasta" th:value="${hasta}"></label>
+				<p class="nota">Dejá las dos fechas vacías para calcular todo el festival. Si ponés fechas, tienen que estar dentro del festival.</p>
+				<button type="submit">Consultar rentabilidad</button>
+			</div>
+		</form>
+
+		<p class="error" th:if="${error}" th:text="${error}"></p>
+
+		<section th:if="${reporte != null}">
+			<h2 th:text="${festival.nombre}"></h2>
+			<table>
+				<tbody>
+					<tr>
+						<th>Ingresos por pedidos</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.ingresos, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr>
+						<th>Costos de los platos</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.costosPlatos, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr>
+						<th>Sueldos del personal</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.sueldos, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr>
+						<th>Canon</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.canon, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					<tr class="total">
+						<th>Rentabilidad neta</th>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(reporte.rentabilidadNeta, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
+</html>

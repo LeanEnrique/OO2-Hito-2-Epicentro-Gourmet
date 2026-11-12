@@ -44,6 +44,16 @@ public class ReporteService {
         );
     }
 
+    // Recaudación de una unidad puntual: es la que consulta el responsable sobre su propia unidad
+    public BigDecimal recaudacionDeUnidad(Festival festival, UnidadDeVenta unidad) {
+
+        if (festival == null || unidad == null) {
+            throw new IllegalArgumentException("El festival y la unidad son obligatorios");
+        }
+
+        return recaudacion(pedidoRepository.findByFestivalAndUnidad(festival, unidad));
+    }
+
     // Unidades del festival ordenadas de mayor a menor recaudación (las que no vendieron quedan al final con $ 0)
     public List<RankingUnidadDTO> rankingUnidades(Festival festival) {
 
