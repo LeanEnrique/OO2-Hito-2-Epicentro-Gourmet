@@ -3,6 +3,7 @@ package unla.epicentro.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import unla.epicentro.entities.Festival;
 import unla.epicentro.entities.FoodTruck;
 import unla.epicentro.entities.PuestoDesarmable;
 import unla.epicentro.entities.UnidadDeVenta;
+import unla.epicentro.dtos.ReporteMayoresCanonDTO;
 
 @Service
 public class CanonService {
@@ -76,5 +78,27 @@ public class CanonService {
         }
 
         return resultado;
+    }
+
+
+    public List<ReporteMayoresCanonDTO> obtenerMayoresCanon(Festival festival, int cantidad) {
+
+        if (festival == null) {
+            throw new IllegalArgumentException("El festival es obligatorio");
+        }
+
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor a cero");
+        }
+
+        return obtenerCanonDeUnidades(festival).stream()
+            .sorted(Comparator.comparing(CanonDTO::getCanon).reversed())
+            .limit(cantidad)
+            .map(canon -> new ReporteMayoresCanonDTO(
+                    canon.getNombreComercial(),
+                    canon.getCodigo(),
+                    canon.getTipo(),
+                    canon.getCanon()))
+            .toList();
     }
 }
