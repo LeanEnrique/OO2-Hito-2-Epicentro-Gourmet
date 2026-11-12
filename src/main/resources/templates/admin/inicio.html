@@ -82,6 +82,14 @@
 						</tbody>
 					</table>
 				</section>
+				<h3>Reporte de recaudación</h3>
+
+				<section th:if="${reporteVenta != null}">
+					<p>Recaudación total:
+						<strong
+							th:text="'$ ' + ${#numbers.formatDecimal(reporteVenta.recaudacionTotal, 1, 'POINT', 2, 'COMMA' )} "></strong>
+					</p>
+				</section>
 		</th:block>
 	</main>
 </body>
