@@ -1,78 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Cerrar caja')}"></head>
+<head th:replace="~{fragments :: head('Caja')}"></head>
 <body>
 	<header th:replace="~{fragments :: nav}"></header>
 	<main class="angosto">
-		<p><a class="boton secundario" th:href="@{/empleado}">← Volver a mi panel</a></p>
-		<h1>Cerrar caja</h1>
+		<h1>Caja</h1>
 		<div th:replace="~{fragments :: mensajes}"></div>
 
 		<p th:text="${cajero.nombreCompleto} + ' · Turno ' + ${cajero.turno.descripcion}"></p>
 
-		<p class="error" th:if="${asignacion == null}">
+		<p class="error" th:if="${asignacion == null and abierta == null}">
 			Hoy no tenés un festival activo asignado, así que no podés abrir la caja.
 		</p>
 
-		<section th:if="${asignacion != null and abierta == null}">
-			<h2>Abrir caja del día</h2>
-			<p th:text="${asignacion.festival.nombre} + ' · ' + ${asignacion.unidad.nombreComercial}"></p>
-			<form th:action="@{/empleado/caja/abrir}" method="post">
-				<label>Monto inicial en efectivo
-					<input type="number" step="0.01" min="0" name="montoInicial" value="0" required>
-				</label>
-				<button type="submit">Abrir caja</button>
-			</form>
-		</section>
-
-		<section th:if="${abierta != null}">
-			<h2>Cerrar caja del día</h2>
-			<p th:text="${abierta.festival.nombre} + ' · ' + ${abierta.unidad.nombreComercial} + ' · ' + ${#temporals.format(abierta.fecha, 'dd/MM/yyyy')}"></p>
-
-			<table>
-				<thead><tr><th>Concepto</th><th class="monto">Monto</th></tr></thead>
-				<tbody>
-					<tr>
-						<td>Monto inicial</td>
-						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(abierta.montoInicial, 1, 'POINT', 2, 'COMMA')}"></td>
-					</tr>
-					<tr>
-						<td>Ventas del día (según los pedidos cargados)</td>
-						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></td>
-					</tr>
-					<tr class="subtotal">
-						<td>Total esperado en caja</td>
-						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(abierta.montoInicial.add(ventasDelDia), 1, 'POINT', 2, 'COMMA')}"></td>
-					</tr>
-				</tbody>
-			</table>
-
+		<!-- Caja abierta: los totales salen de los pedidos que se van tomando -->
+		<th:block th:if="${abierta != null}">
+			<section class="hoy activo">
+				<p>Caja abierta · <strong th:text="${abierta.festival.nombre} + ' · ' + ${abierta.unidad.nombreComercial}"></strong></p>
+				<p th:text="${cantidadPedidos} + (${cantidadPedidos == 1} ? ' pedido' : ' pedidos') + ' · Ventas: $ ' + ${#numbers.formatDecimal(ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></p>
+				<p><a class="boton secundario" th:href="@{/empleado/pedidos}">Ver pedidos</a></p>
+			</section>
 			<form th:action="@{/empleado/caja/cerrar}" method="post">
-				<label>Monto contado al cerrar
-					<input type="number" step="0.01" min="0" name="montoDeclarado" required>
-				</label>
-				<label>Observaciones (opcional)
-					<input type="text" name="observaciones" maxlength="255">
-				</label>
 				<button type="submit">Cerrar caja</button>
 			</form>
+		</th:block>
 
-			<p class="nota">La diferencia de arqueo es el monto contado menos el total esperado en caja.</p>
-		</section>
+		<!-- Sin caja abierta: puede reanudar la última de hoy o abrir una nueva -->
+		<th:block th:if="${abierta == null and asignacion != null}">
+			<section class="hoy">
+				<p th:text="${asignacion.festival.nombre} + ' · ' + ${asignacion.unidad.nombreComercial}"></p>
+				<p class="nota" th:if="${reanudable != null}"
+					th:text="'Cerraste la caja a las ' + ${#temporals.format(reanudable.fechaHoraCierre, 'HH:mm')} + ' con ' + ${reanudable.cantidadPedidos} + (${reanudable.cantidadPedidos == 1} ? ' pedido' : ' pedidos') + ' por $ ' + ${#numbers.formatDecimal(reanudable.ventasDelDia, 1, 'POINT', 2, 'COMMA')} + '. Podés reanudarla o abrir una nueva.'"></p>
+				<p class="nota" th:if="${reanudable == null}">Abrí la caja para empezar a tomar pedidos.</p>
+				<div class="acciones-form">
+					<form th:if="${reanudable != null}" th:action="@{/empleado/caja/reanudar}" method="post">
+						<button type="submit">Reanudar caja</button>
+					</form>
+					<form th:action="@{/empleado/caja/abrir}" method="post">
+						<button type="submit" th:classappend="${reanudable != null} ? 'boton secundario'" th:text="${reanudable != null} ? 'Abrir caja nueva' : 'Abrir caja'"></button>
+					</form>
+				</div>
+			</section>
+		</th:block>
 
 		<h2>Historial de cajas</h2>
-		<p th:if="${historial.isEmpty()}">Todavía no cerraste ninguna caja.</p>
+		<p th:if="${historial.isEmpty()}">Todavía no abriste ninguna caja.</p>
 		<table th:unless="${historial.isEmpty()}">
 			<thead>
 				<tr>
 					<th>Fecha</th>
 					<th>Turno</th>
 					<th>Unidad</th>
-					<th class="monto">Inicial</th>
+					<th>Cierre</th>
+					<th class="monto">Pedidos</th>
 					<th class="monto">Ventas</th>
-					<th class="monto">Contado</th>
-					<th class="monto">Diferencia</th>
-					<th>Estado</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -80,11 +61,16 @@
 					<td th:text="${#temporals.format(c.fecha, 'dd/MM/yyyy')}"></td>
 					<td th:text="${c.turno.descripcion}"></td>
 					<td th:text="${c.unidad.nombreComercial}"></td>
-					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.montoInicial, 1, 'POINT', 2, 'COMMA')}"></td>
-					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></td>
-					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.montoDeclarado, 1, 'POINT', 2, 'COMMA')}"></td>
-					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.diferencia, 1, 'POINT', 2, 'COMMA')}"></td>
-					<td th:text="${c.estado}"></td>
+					<th:block th:if="${c.estaAbierta()}">
+						<td>Abierta</td>
+						<td class="monto" th:text="${cantidadPedidos}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></td>
+					</th:block>
+					<th:block th:unless="${c.estaAbierta()}">
+						<td th:text="${#temporals.format(c.fechaHoraCierre, 'HH:mm')}"></td>
+						<td class="monto" th:text="${c.cantidadPedidos}"></td>
+						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(c.ventasDelDia, 1, 'POINT', 2, 'COMMA')}"></td>
+					</th:block>
 				</tr>
 			</tbody>
 		</table>

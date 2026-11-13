@@ -68,6 +68,35 @@
 
         </table>
 
+        <section th:unless="${bajas.isEmpty()}">
+
+            <h2>Dados de baja</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="plato : ${bajas}">
+                        <td th:text="${plato.nombre}"></td>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(plato.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(plato.costo, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td>
+                            <form th:action="@{/responsable/platos/{id}/reactivar(id=${plato.id})}" method="post"
+                                style="display:inline">
+                                <button type="submit" class="boton">Reactivar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
     </main>
 
 </body>

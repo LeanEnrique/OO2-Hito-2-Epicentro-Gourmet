@@ -44,7 +44,7 @@
 
                 <h3>Período de consulta</h3>
 
-                <p class="nota" th:text="'El festival va del ' + ${#temporals.format(festivalSeleccionado.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(festivalSeleccionado.fechaFin, 'dd/MM/yyyy')} + '. Las fechas tienen que estar dentro de ese rango.'"></p>
+                <p class="nota" th:text="'El festival va del ' + ${#temporals.format(festivalSeleccionado.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(festivalSeleccionado.fechaFin, 'dd/MM/yyyy')} + '.'"></p>
 
                 <label for="desde">Desde</label>
                 <input type="date" id="desde" name="desde" th:value="${desde}"

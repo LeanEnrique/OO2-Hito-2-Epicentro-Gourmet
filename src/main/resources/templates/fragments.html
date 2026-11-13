@@ -39,14 +39,16 @@
 				<a th:href="@{/admin/plato-estrella}" th:classappend="${r == '/admin/plato-estrella'} ? 'activa'">Plato estrella</a>
 			</th:block>
 			<th:block sec:authorize="hasRole('RESPONSABLE')">
-				<a th:href="@{/responsable}" th:classappend="${r == '/responsable' or r.startsWith('/responsable/festivales') or r.startsWith('/responsable/pedidos')} ? 'activa'">Mi unidad</a>
+				<a th:href="@{/responsable}" th:classappend="${r == '/responsable' or r.startsWith('/responsable/festivales')} ? 'activa'">Mi unidad</a>
 				<a th:href="@{/responsable/empleados}" th:classappend="${r.startsWith('/responsable/empleados')} ? 'activa'">Empleados</a>
 				<a th:href="@{/responsable/platos}" th:classappend="${r.startsWith('/responsable/platos')} ? 'activa'">Platos</a>
 				<a th:href="@{/responsable/reportes}" th:classappend="${r.startsWith('/responsable/reportes')} ? 'activa'">Reportes</a>
 				<a th:href="@{/canon}" th:classappend="${r.startsWith('/canon')} ? 'activa'">Canon</a>
 			</th:block>
 			<a sec:authorize="hasRole('EMPLEADO')" th:href="@{/empleado}" th:classappend="${r == '/empleado'} ? 'activa'">Mi panel</a>
-			<a sec:authorize="hasRole('EMPLEADO')" th:href="@{/empleado/caja}" th:classappend="${r.startsWith('/empleado/caja')} ? 'activa'">Cerrar caja</a>
+			<a sec:authorize="hasRole('EMPLEADO')" th:if="${esCajero}" th:href="@{/empleado/pedidos}" th:classappend="${r.startsWith('/empleado/pedidos')} ? 'activa'">Pedidos</a>
+			<a sec:authorize="hasRole('EMPLEADO')" th:if="${esCajero}" th:href="@{/empleado/caja}" th:classappend="${r.startsWith('/empleado/caja')} ? 'activa'">Caja</a>
+			<a sec:authorize="hasRole('EMPLEADO')" th:href="@{/empleado/liquidacion}" th:classappend="${r.startsWith('/empleado/liquidacion')} ? 'activa'">Liquidación de sueldo</a>
 		</nav>
 	</header>
 

@@ -22,14 +22,14 @@
 			</label>
 
 			<div th:if="${festival != null}">
-				<label>Desde <input type="date" name="desde" th:value="${desde}"></label>
-				<label>Hasta <input type="date" name="hasta" th:value="${hasta}"></label>
-				<p class="nota">Dejá las dos fechas vacías para calcular todo el festival. Si ponés fechas, tienen que estar dentro del festival.</p>
+				<p class="nota" th:text="'El festival va del ' + ${#temporals.format(festival.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(festival.fechaFin, 'dd/MM/yyyy')} + '.'"></p>
+				<label>Desde <input type="date" name="desde" th:value="${desde}" th:min="${festival.fechaInicio}" th:max="${festival.fechaFin}"></label>
+				<label>Hasta <input type="date" name="hasta" th:value="${hasta}" th:min="${festival.fechaInicio}" th:max="${festival.fechaFin}"></label>
+				<p class="nota">Dejá las dos fechas vacías para calcular todo el festival.</p>
 				<button type="submit">Consultar rentabilidad</button>
 			</div>
 		</form>
 
-		<p class="error" th:if="${error}" th:text="${error}"></p>
 
 		<section th:if="${reporte != null}">
 			<h2 th:text="${festival.nombre}"></h2>
