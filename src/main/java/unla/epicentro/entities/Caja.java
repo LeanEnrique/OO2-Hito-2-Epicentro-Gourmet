@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// Cierre de caja de un cajero al finalizar el día: guarda el arqueo del turno
+// Caja de un cajero: se abre en 0, se le asocian los pedidos que toma y al cerrarla guarda sus totales
 @Entity
 @Getter
 @Setter
@@ -43,24 +43,12 @@ public class Caja {
 	@Enumerated(EnumType.STRING)
 	private EstadoCaja estado = EstadoCaja.ABIERTA;
 
-	private BigDecimal montoInicial = BigDecimal.ZERO;
+	// Totales de los pedidos tomados con esta caja: se calculan solos al cerrarla
+	private int cantidadPedidos;
 
-	// Lo que el sistema calcula a partir de los pedidos cargados ese día
 	private BigDecimal ventasDelDia = BigDecimal.ZERO;
 
-	// Lo que el cajero declara haber contado al cerrar
-	private BigDecimal montoDeclarado = BigDecimal.ZERO;
-
-	// montoDeclarado - (montoInicial + ventasDelDia)
-	private BigDecimal diferencia = BigDecimal.ZERO;
-
 	private LocalDateTime fechaHoraCierre;
-
-	private String observaciones;
-
-	public BigDecimal getMontoEsperado() {
-		return montoInicial.add(ventasDelDia);
-	}
 
 	public boolean estaAbierta() {
 		return estado == EstadoCaja.ABIERTA;

@@ -9,7 +9,7 @@
 		<div th:replace="~{fragments :: mensajes}"></div>
 
 		<h2>Mis festivales</h2>
-		<p th:if="${misFestivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival. Inscribila en uno para poder cargar pedidos.</p>
+		<p th:if="${misFestivales.isEmpty()}">Tu unidad todavía no está inscripta en ningún festival. Inscribila en uno para que tus cajeros puedan cargar pedidos.</p>
 		<table th:unless="${misFestivales.isEmpty()}">
 			<thead><tr><th>Festival</th><th>Fechas</th><th>Estado</th><th></th></tr></thead>
 			<tbody>

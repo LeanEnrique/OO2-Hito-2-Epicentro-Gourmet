@@ -49,7 +49,7 @@
 							<span th:text="${l.conceptoAdicional} + ': $ ' + ${#numbers.formatDecimal(l.adicional, 1, 'POINT', 2, 'COMMA')}"></span>
 						</td>
 						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(l.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
-						<td class="monto" th:text="l.porcentajeFactor + '%'"></td>
+						<td class="monto" th:text="${l.porcentajeFactor} + '%'"></td>
 						<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(l.total, 1, 'POINT', 2, 'COMMA')}"></td>
 					</tr>
 					<tr class="total">

@@ -169,3 +169,27 @@ INSERT IGNORE INTO item_plato (id, pedido_id, plato_id, cantidad, precio_unitari
 (36, 19, 8, 8, 3500, 1100),
 (37, 20, 1, 6, 8500, 3500),
 (38, 20, 2, 4, 4000, 1200);
+
+-- Cajas cerradas de días anteriores (Festival de Primavera), con los pedidos que se tomaron en cada una
+-- Lucía (cajera noche, La Burguesía) y Tomás (cajero mañana, Pizza Rodante)
+-- Los totales de cada caja son la suma de sus pedidos
+INSERT IGNORE INTO caja (id, fecha, festival_id, unidad_id, cajero_id, turno, estado, cantidad_pedidos, ventas_del_dia, fecha_hora_cierre) VALUES
+(1, '2026-10-05', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 29500, '2026-10-05 23:30:00'),
+(2, '2026-10-18', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 105000, '2026-10-18 23:45:00'),
+(3, '2026-10-25', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 126000, '2026-10-25 23:30:00'),
+(4, '2026-11-01', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 105000, '2026-11-01 23:40:00'),
+(5, '2026-11-05', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 100000, '2026-11-05 23:30:00'),
+(6, '2026-11-08', 2, 1, 3, 'NOCHE', 'CERRADA', 1, 105000, '2026-11-08 23:35:00'),
+(7, '2026-10-12', 2, 3, 8, 'MANANA', 'CERRADA', 1, 64000, '2026-10-12 15:00:00'),
+(8, '2026-10-26', 2, 3, 8, 'MANANA', 'CERRADA', 1, 96000, '2026-10-26 15:10:00'),
+(9, '2026-11-07', 2, 3, 8, 'MANANA', 'CERRADA', 1, 88000, '2026-11-07 15:00:00');
+
+UPDATE pedido SET caja_id = 1 WHERE id = 3 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 2 WHERE id = 6 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 3 WHERE id = 7 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 4 WHERE id = 8 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 5 WHERE id = 9 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 6 WHERE id = 10 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 7 WHERE id = 13 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 8 WHERE id = 14 AND caja_id IS NULL;
+UPDATE pedido SET caja_id = 9 WHERE id = 15 AND caja_id IS NULL;

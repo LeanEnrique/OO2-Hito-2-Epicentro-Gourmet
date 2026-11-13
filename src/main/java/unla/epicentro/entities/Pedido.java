@@ -35,6 +35,10 @@ public class Pedido {
 	@ManyToOne
 	private UnidadDeVenta unidad;
 
+	// Caja abierta del cajero que cargó el pedido
+	@ManyToOne
+	private Caja caja;
+
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
 	@OrderBy("id ASC")
 	private List<ItemPlato> items = new ArrayList<>();

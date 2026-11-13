@@ -14,4 +14,6 @@ public interface CajaRepository extends JpaRepository<Caja, Long> {
 	Optional<Caja> findFirstByCajeroAndEstadoOrderByFechaDescIdDesc(Cajero cajero, EstadoCaja estado);
 
 	List<Caja> findByCajeroOrderByFechaDescIdDesc(Cajero cajero);
+
+	Optional<Caja> findFirstByCajeroOrderByFechaDescIdDesc(Cajero cajero);
 }

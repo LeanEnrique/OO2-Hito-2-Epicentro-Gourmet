@@ -33,10 +33,19 @@ public class PlatoService {
 						busqueda.trim());
 	}
 
+	// Platos dados de baja (baja lógica): se pueden reactivar
+	public List<Plato> dadosDeBaja(UnidadDeVenta unidad) {
+		return platoRepository.findByUnidadAndActivoFalseOrderByNombreAsc(unidad);
+	}
+
 	@Transactional
 	public void crear(PlatoDTO dto, UnidadDeVenta unidad) {
 
 		validar(dto);
+
+		if (platoRepository.existsByUnidadAndActivoTrueAndNombreIgnoreCase(unidad, dto.getNombre().trim())) {
+			throw new IllegalArgumentException(yaExiste(dto.getNombre()));
+		}
 
 		Plato plato = new Plato();
 		plato.setNombre(dto.getNombre().trim());
@@ -57,6 +66,10 @@ public class PlatoService {
 		validar(dto);
 
 		Plato plato = obtenerDeUnidad(id, unidad);
+
+		if (platoRepository.existsByUnidadAndActivoTrueAndNombreIgnoreCaseAndIdNot(unidad, dto.getNombre().trim(), id)) {
+			throw new IllegalArgumentException(yaExiste(dto.getNombre()));
+		}
 
 		plato.setNombre(dto.getNombre().trim());
 		plato.setPrecio(dto.getPrecio());
@@ -81,9 +94,17 @@ public class PlatoService {
 		Plato plato = platoRepository.findByIdAndUnidad(id, unidad)
 				.orElseThrow(() -> new IllegalArgumentException("El plato no pertenece a esta unidad"));
 
+		if (platoRepository.existsByUnidadAndActivoTrueAndNombreIgnoreCase(unidad, plato.getNombre())) {
+			throw new IllegalArgumentException(yaExiste(plato.getNombre()) + ". Dalo de baja o cambiale el nombre antes de reactivar este");
+		}
+
 		plato.setActivo(true);
 
 		platoRepository.save(plato);
+	}
+
+	private String yaExiste(String nombre) {
+		return "Ya hay un plato activo llamado \"" + nombre.trim() + "\" en tu unidad";
 	}
 
 	public Plato obtenerDeUnidad(Long id, UnidadDeVenta unidad) {

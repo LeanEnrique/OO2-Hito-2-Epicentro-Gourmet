@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Pedidos')}"></head>
+<body>
+	<header th:replace="~{fragments :: nav}"></header>
+	<main>
+		<h1>Pedidos</h1>
+		<div th:replace="~{fragments :: mensajes}"></div>
+
+		<section class="hoy activo" th:if="${abierta != null}">
+			<p>Caja abierta · <strong th:text="${abierta.festival.nombre} + ' · ' + ${abierta.unidad.nombreComercial}"></strong></p>
+			<p><a class="boton" th:href="@{/empleado/pedidos/nuevo}">Nuevo pedido</a></p>
+		</section>
+		<section class="hoy" th:if="${abierta == null}">
+			<p>Para empezar a tomar pedidos, abrí la caja.</p>
+			<p><a class="boton" th:href="@{/empleado/caja}">Ir a la caja</a></p>
+		</section>
+
+		<h2>Historial de pedidos</h2>
+		<p th:if="${pedidos.isEmpty()}">Todavía no tomaste ningún pedido.</p>
+		<table th:unless="${pedidos.isEmpty()}">
+			<thead><tr><th>#</th><th>Fecha</th><th>Caja</th><th>Detalle</th><th class="monto">Total</th></tr></thead>
+			<tbody>
+				<tr th:each="p : ${pedidos}" th:with="actual=${abierta != null and p.caja.id == abierta.id}" th:classappend="${actual} ? 'resaltada'">
+					<td th:text="${p.id}"></td>
+					<td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
+					<td th:text="${p.caja.unidad.nombreComercial} + ' · ' + ${p.caja.turno.descripcion}"></td>
+					<td><span th:each="i, st : ${p.items}" th:text="${i.cantidad} + ' x ' + ${i.plato.nombre} + (${st.last} ? '' : ', ')"></span></td>
+					<td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

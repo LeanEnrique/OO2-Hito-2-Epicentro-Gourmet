@@ -12,34 +12,11 @@
 		</p>
 		<div th:replace="~{fragments :: mensajes}"></div>
 
-		<h2>Resultados de mi unidad</h2>
-		<p>Plato estrella:
-			<strong th:if="${platoEstrella != null}" th:text="${platoEstrella.nombre} + ' ($ ' + ${#numbers.formatDecimal(platoEstrella.precio, 1, 'POINT', 2, 'COMMA')} + ')'"></strong>
-			<span th:if="${platoEstrella == null}">sin pedidos todavía</span>
-		</p>
-
-		<h3>Rentabilidad neta del festival</h3>
-		<table th:replace="~{:: tablaRentabilidad(${rentabilidad})}"></table>
-
-		<h3>Rentabilidad neta entre fechas</h3>
-		<p class="nota" th:text="'Elegí un rango dentro del festival: del ' + ${#temporals.format(festival.fechaInicio, 'dd/MM/yyyy')} + ' al ' + ${#temporals.format(festival.fechaFin, 'dd/MM/yyyy')} + '.'"></p>
-		<form th:action="@{/responsable/festivales/{id}(id=${festival.id})}" method="get" class="en-linea">
-			<label class="corto">Desde
-				<input type="date" name="desde" th:value="${desde}" th:min="${festival.fechaInicio}" th:max="${festival.fechaFin}" required>
-			</label>
-			<label class="corto">Hasta
-				<input type="date" name="hasta" th:value="${hasta}" th:min="${festival.fechaInicio}" th:max="${festival.fechaFin}" required>
-			</label>
-			<button type="submit">Calcular</button>
-		</form>
-		<p class="error" th:if="${errorPeriodo}" th:text="${errorPeriodo}"></p>
-		<th:block th:if="${rentabilidadPeriodo != null}">
-			<table th:replace="~{:: tablaRentabilidad(${rentabilidadPeriodo})}"></table>
-		</th:block>
+		<p><a class="boton secundario" th:href="@{/responsable/reportes(festivalId=${festival.id})}">Ver reportes de este festival</a></p>
 
 		<h2>Pedidos</h2>
 		<p th:text="${pedidos.size()} + (${pedidos.size() == 1} ? ' pedido' : ' pedidos') + ' · Recaudación: $ ' + ${#numbers.formatDecimal(recaudacion, 1, 'POINT', 2, 'COMMA')}"></p>
-		<p th:if="${festival.estado == 'En curso'}"><a class="boton" th:href="@{/responsable/pedidos/nuevo}">Nuevo pedido</a></p>
+		<p class="nota" th:if="${festival.estado == 'En curso'}">Los pedidos los cargan los cajeros de la unidad desde su caja.</p>
 		<p th:if="${pedidos.isEmpty()}">Todavía no hay pedidos en este festival.</p>
 		<table th:unless="${pedidos.isEmpty()}">
 			<thead><tr><th>#</th><th>Fecha</th><th>Detalle</th><th class="monto">Total</th></tr></thead>
@@ -56,17 +33,5 @@
 		</table>
 	</main>
 
-	<!-- Detalle de la rentabilidad: pedidos - costo de platos - sueldos - canon (no se muestra acá, se reutiliza arriba) -->
-	<th:block th:if="${false}">
-	<table th:fragment="tablaRentabilidad(r)" class="resumen">
-		<tbody>
-			<tr><td>Ingresos por pedidos</td><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.ingresos, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-			<tr><td>− Costo de platos</td><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.costosPlatos, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-			<tr><td>− Sueldos</td><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.sueldos, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-			<tr><td>− Canon</td><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.canon, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-			<tr class="total"><td>Rentabilidad neta</td><td class="monto" th:text="'$ ' + ${#numbers.formatDecimal(r.rentabilidadNeta, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-		</tbody>
-	</table>
-	</th:block>
 </body>
 </html>

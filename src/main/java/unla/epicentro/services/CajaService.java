@@ -17,7 +17,7 @@ import unla.epicentro.entities.Pedido;
 import unla.epicentro.repositories.CajaRepository;
 import unla.epicentro.repositories.PedidoRepository;
 
-// CU Cerrar Caja: apertura y cierre del turno de un cajero
+// CU Cerrar Caja: apertura, cierre y reanudación de la caja de un cajero
 @Service
 public class CajaService {
 
@@ -37,17 +37,46 @@ public class CajaService {
 		return cajaRepository.findByCajeroOrderByFechaDescIdDesc(cajero);
 	}
 
-	// Las ventas del día salen de los pedidos cargados por el responsable, no se tipean a mano
+	public List<Pedido> pedidosDe(Caja caja) {
+		return pedidoRepository.findByCajaOrderByIdDesc(caja);
+	}
+
+	// Las ventas salen de los pedidos que el cajero cargó con esta caja abierta, no se tipean a mano
 	public BigDecimal ventasDelDia(Caja caja) {
-		return pedidoRepository
-				.findByUnidadAndFestivalAndFecha(caja.getUnidad(), caja.getFestival(), caja.getFecha())
-				.stream()
+		return pedidosDe(caja).stream()
 				.map(Pedido::getTotal)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
+	// Solo se puede reanudar la última caja del cajero, si está cerrada y es de hoy
+	public Optional<Caja> reanudableDe(Cajero cajero) {
+		return cajaRepository.findFirstByCajeroOrderByFechaDescIdDesc(cajero)
+				.filter(c -> !c.estaAbierta() && c.getFecha().equals(LocalDate.now()));
+	}
+
 	@Transactional
-	public Caja abrir(Cajero cajero, AsignacionPersonal asignacion, BigDecimal montoInicial) {
+	public Caja reanudar(Cajero cajero) {
+
+		if (abiertaDe(cajero).isPresent()) {
+			throw new IllegalArgumentException("Ya tenés una caja abierta");
+		}
+
+		Caja caja = reanudableDe(cajero)
+				.orElseThrow(() -> new IllegalArgumentException("Solo se puede reanudar la última caja cerrada hoy"));
+
+		if (!caja.getFestival().estaActivo(LocalDate.now())) {
+			throw new IllegalArgumentException("El festival de esa caja ya no está en curso");
+		}
+
+		// Los totales se vuelven a calcular cuando se cierre de nuevo
+		caja.setEstado(EstadoCaja.ABIERTA);
+		caja.setFechaHoraCierre(null);
+
+		return cajaRepository.save(caja);
+	}
+
+	@Transactional
+	public Caja abrir(Cajero cajero, AsignacionPersonal asignacion) {
 
 		if (cajero == null) {
 			throw new IllegalArgumentException("El cajero es obligatorio");
@@ -61,24 +90,19 @@ public class CajaService {
 			throw new IllegalArgumentException("Ya tenés una caja abierta, cerrala antes de abrir otra");
 		}
 
-		if (montoInicial == null || montoInicial.compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException("El monto inicial no puede ser negativo");
-		}
-
 		Caja caja = new Caja();
 		caja.setFecha(LocalDate.now());
 		caja.setFestival(asignacion.getFestival());
 		caja.setUnidad(asignacion.getUnidad());
 		caja.setCajero(cajero);
 		caja.setTurno(cajero.getTurno());
-		caja.setMontoInicial(montoInicial);
 		caja.setEstado(EstadoCaja.ABIERTA);
 
 		return cajaRepository.save(caja);
 	}
 
 	@Transactional
-	public Caja cerrar(Cajero cajero, BigDecimal montoDeclarado, String observaciones) {
+	public Caja cerrar(Cajero cajero) {
 
 		Caja caja = abiertaDe(cajero)
 				.orElseThrow(() -> new IllegalArgumentException("No tenés ninguna caja abierta para cerrar"));
@@ -87,14 +111,9 @@ public class CajaService {
 			throw new IllegalArgumentException("La caja ya está cerrada");
 		}
 
-		if (montoDeclarado == null || montoDeclarado.compareTo(BigDecimal.ZERO) < 0) {
-			throw new IllegalArgumentException("El monto declarado no puede ser negativo");
-		}
-
+		// Cierre automático: los totales salen de los pedidos de la caja
+		caja.setCantidadPedidos(pedidosDe(caja).size());
 		caja.setVentasDelDia(ventasDelDia(caja));
-		caja.setMontoDeclarado(montoDeclarado);
-		caja.setDiferencia(montoDeclarado.subtract(caja.getMontoEsperado()));
-		caja.setObservaciones(observaciones == null ? null : observaciones.trim());
 		caja.setFechaHoraCierre(LocalDateTime.now());
 		caja.setEstado(EstadoCaja.CERRADA);
 

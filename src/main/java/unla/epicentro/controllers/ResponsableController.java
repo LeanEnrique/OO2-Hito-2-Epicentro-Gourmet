@@ -2,12 +2,8 @@ package unla.epicentro.controllers;
 
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.HashMap;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +32,6 @@ import unla.epicentro.services.PedidoService;
 import unla.epicentro.services.UsuarioService;
 import unla.epicentro.services.EmpleadoService;
 import unla.epicentro.services.FestivalService;
-import unla.epicentro.services.PlatoEstrellaService;
-import unla.epicentro.services.RentabilidadService;
 import unla.epicentro.services.PlatoService;
 
 @Controller
@@ -51,10 +45,8 @@ public class ResponsableController {
 	private final EmpleadoService empleadoService;
 	private final PlatoService platoService;
 	private final FestivalService festivalService;
-	private final RentabilidadService rentabilidadService;
-	private final PlatoEstrellaService platoEstrellaService;
 
-	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalService festivalService, RentabilidadService rentabilidadService, PlatoEstrellaService platoEstrellaService) {
+	public ResponsableController(UsuarioService usuarioService, UnidadDeVentaRepository unidadRepository, PlatoRepository platoRepository, PedidoService pedidoService, EmpleadoService empleadoService, PlatoService platoService, FestivalService festivalService) {
 
 		this.usuarioService = usuarioService;
 		this.unidadRepository = unidadRepository;
@@ -63,8 +55,6 @@ public class ResponsableController {
 		this.empleadoService = empleadoService;
 		this.platoService = platoService;
 		this.festivalService = festivalService;
-		this.rentabilidadService = rentabilidadService;
-		this.platoEstrellaService = platoEstrellaService;
 	}
 
 	@GetMapping
@@ -77,12 +67,9 @@ public class ResponsableController {
 		return "responsable/inicio";
 	}
 
-	// Detalle del festival para la unidad: pedidos, canon, plato estrella y rentabilidad neta (total o entre fechas)
+	// Detalle del festival para la unidad: sus datos y los pedidos que tomaron los cajeros
 	@GetMapping("/festivales/{id}")
-	public String detalleFestival(@PathVariable Long id,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
-			Principal principal, Model model, RedirectAttributes redirect) {
+	public String detalleFestival(@PathVariable Long id, Principal principal, Model model, RedirectAttributes redirect) {
 		UnidadDeVenta unidad = unidadDe(principal);
 		try {
 			Festival festival = festivalService.festivalDe(unidad, id);
@@ -90,18 +77,6 @@ public class ResponsableController {
 			model.addAttribute("festival", festival);
 			model.addAttribute("pedidos", pedidos);
 			model.addAttribute("recaudacion", pedidos.stream().map(Pedido::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add));
-			model.addAttribute("platoEstrella", platoEstrellaService.obtenerPlatoEstrella(unidad, festival));
-			model.addAttribute("desde", desde);
-			model.addAttribute("hasta", hasta);
-			model.addAttribute("rentabilidad", rentabilidadService.calcularRentabilidad(festival, unidad));
-			if (desde != null || hasta != null) {
-				try {
-					model.addAttribute("rentabilidadPeriodo",
-							rentabilidadService.calcularRentabilidadEntreFechas(festival, unidad, desde, hasta));
-				} catch (IllegalArgumentException e) {
-					model.addAttribute("errorPeriodo", e.getMessage());
-				}
-			}
 			return "responsable/festival";
 		} catch (IllegalArgumentException e) {
 			redirect.addFlashAttribute("error", e.getMessage());
@@ -120,33 +95,6 @@ public class ResponsableController {
 		return "redirect:/responsable";
 	}
 
-	@GetMapping("/pedidos/nuevo")
-	public String nuevoPedido(Principal principal, Model model) {
-		UnidadDeVenta unidad = unidadDe(principal);
-		model.addAttribute("unidad", unidad);
-		model.addAttribute("festivales", pedidoService.festivalesActivos(unidad));
-		model.addAttribute("platos", platoRepository.findByUnidadAndActivoTrueOrderByNombreAsc(unidad));
-		return "responsable/nuevo-pedido";
-	}
-
-	// Las cantidades llegan como parámetros "cant_<id|Plato>"
-	@PostMapping("/pedidos")
-	public String crearPedido(Principal principal, @RequestParam Long festivalId, @RequestParam Map<String, String> params, RedirectAttributes redirect) {
-		try {
-			Map<Long, Integer> cantidades = new HashMap<>();
-			params.forEach((clave, valor) -> {
-				if (clave.startsWith("cant_") && !valor.isBlank()) {
-					cantidades.put(Long.valueOf(clave.substring(5)), Integer.valueOf(valor));
-				}
-			});
-			pedidoService.crear(unidadDe(principal), festivalId, cantidades);
-			redirect.addFlashAttribute("mensaje", "Pedido registrado");
-			return "redirect:/responsable/festivales/" + festivalId;
-		} catch (IllegalArgumentException e) {
-			redirect.addFlashAttribute("error", e.getMessage());
-			return "redirect:/responsable/pedidos/nuevo";
-		}
-	}
 @GetMapping("/empleados")
 	public String empleados(
 			Principal principal,
@@ -306,6 +254,7 @@ public class ResponsableController {
 		model.addAttribute("unidad", unidad);
 		model.addAttribute("platos", platoService.buscar(unidad, busqueda));
 		model.addAttribute("busqueda", busqueda);
+		model.addAttribute("bajas", platoService.dadosDeBaja(unidad));
 
 		return "responsable/platos";
 	}
