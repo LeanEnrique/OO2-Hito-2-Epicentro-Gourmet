@@ -31,101 +31,72 @@ Además, en el repositorio está el modelo documentado en [`docs/diagrama-clases
 
 ## Cómo ejecutar el proyecto
 
-### Paso 1: Instalar los requisitos
+### 1. Requisitos
 
-- **Java 17 o superior.** Para verificarlo: `java -version`.
-- **MySQL 8 o superior.**
-- **Maven no hace falta instalarlo:** el proyecto trae `mvnw`, que lo descarga solo la primera vez.
+Java 17 o superior y MySQL 8 o superior. Maven no hace falta instalarlo: el proyecto trae `mvnw`.
 
-### Paso 2: Clonar el repositorio
+### 2. Clonar el repositorio
 
 ```bash
 git clone https://github.com/LeanEnrique/OO2-Hito-2-Epicentro-Gourmet.git
 cd OO2-Hito-2-Epicentro-Gourmet
 ```
 
-### Paso 3: Instalar y levantar MySQL
+### 3. Levantar MySQL
 
-**Mac (con Homebrew)**
+La aplicación se conecta con el usuario `root` y la contraseña `root`, y crea sola la base `epicentro_gourmet`, sus tablas y los datos de prueba.
 
-```bash
-brew install mysql
-brew services start mysql
-mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
-```
+- **Mac:**
+  ```bash
+  brew install mysql
+  brew services start mysql
+  mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
+  ```
+- **Windows:** instalar [MySQL Community Server](https://dev.mysql.com/downloads/installer/) y, cuando lo pida, poner `root` como contraseña del usuario `root`.
 
-El último comando le pone la contraseña `root` al usuario `root`, que es la que usa la aplicación por defecto.
+Si tu MySQL usa otra contraseña, definila en `DB_PASSWORD` (paso 4).
 
-**Windows**
+### 4. Configurar las variables de entorno (opcional)
 
-1. Descargar e instalar MySQL Community Server desde https://dev.mysql.com/downloads/installer/
-2. Durante la instalación, cuando lo pida, definir la contraseña del usuario `root`. Si se usa `root` como contraseña, no hace falta configurar nada más para la base.
-3. Verificar que el servicio "MySQL" esté iniciado (Servicios de Windows).
+Todas tienen un valor por defecto, así que solo hay que definir las que cambien:
 
-**No hace falta crear la base de datos ni las tablas:** al arrancar, la aplicación crea la base `epicentro_gourmet`, sus tablas y carga los datos de prueba.
-
-### Paso 4: Configurar las variables de entorno
-
-La aplicación lee su configuración de variables de entorno. Todas tienen un valor por defecto, así que solo hay que definir las que sean distintas.
-
-| Variable | Valor por defecto | Para qué se usa |
+| Variable | Por defecto | Para qué |
 |---|---|---|
-| `DB_HOST` | `localhost` | Servidor de MySQL |
-| `DB_PORT` | `3306` | Puerto de MySQL |
-| `DB_NAME` | `epicentro_gourmet` | Nombre de la base de datos |
-| `DB_USER` | `root` | Usuario de MySQL |
-| `DB_PASSWORD` | `root` | Contraseña de MySQL |
-| `MAIL_HOST` | `smtp.gmail.com` | Servidor de correo saliente |
-| `MAIL_PORT` | `587` | Puerto del servidor de correo |
-| `MAIL_USERNAME` | (vacío) | Cuenta de Gmail desde la que se envían los mails |
-| `MAIL_PASSWORD` | (vacío) | Contraseña de aplicación de esa cuenta de Gmail |
+| `DB_USER` / `DB_PASSWORD` | `root` / `root` | Usuario y contraseña de MySQL |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` | `localhost` / `3306` / `epicentro_gourmet` | Servidor y base de MySQL |
+| `MAIL_USERNAME` | (vacío) | Cuenta de Gmail que envía los mails |
+| `MAIL_PASSWORD` | (vacío) | [Contraseña de aplicación](https://myaccount.google.com/apppasswords) de esa cuenta (no la contraseña normal) |
 
-**Envío de mails (opcional).** Al dar de alta un empleado se le envía un mail con su usuario y su contraseña. Para que funcione:
-
-1. Entrar a https://myaccount.google.com con la cuenta de Gmail del proyecto.
-2. En **Seguridad**, activar la **Verificación en 2 pasos**.
-3. Buscar **Contraseñas de aplicaciones**, crear una y copiar el código de 16 letras sin espacios.
-4. Usar ese código como `MAIL_PASSWORD` (no la contraseña normal de Gmail).
-
-Sin estas variables la aplicación funciona igual: el empleado se crea, la pantalla avisa que no se pudo enviar el mail y **muestra la contraseña temporal generada** para no perder el alta.
-
-Las credenciales nunca se suben al repositorio: se definen solo en la máquina donde se ejecuta.
-
-### Paso 5: Ejecutar la aplicación
-
-**Desde la terminal (Mac / Linux)**, en la carpeta del proyecto:
+Con `MAIL_USERNAME` y `MAIL_PASSWORD`, al dar de alta un empleado le llega un mail con su usuario y contraseña. Sin ellas la aplicación funciona igual y muestra la contraseña del empleado en pantalla. Las credenciales nunca se suben al repositorio.
 
 ```bash
+# Mac / Linux
 export MAIL_USERNAME="cuenta.del.proyecto@gmail.com"
 export MAIL_PASSWORD="codigodeaplicacion"
-./mvnw spring-boot:run
 ```
-
-**Desde la terminal (Windows PowerShell)**, en la carpeta del proyecto:
 
 ```powershell
+# Windows (PowerShell)
 $env:MAIL_USERNAME="cuenta.del.proyecto@gmail.com"
 $env:MAIL_PASSWORD="codigodeaplicacion"
-.\mvnw.cmd spring-boot:run
 ```
 
-Si la contraseña de MySQL no es `root`, agregar también `DB_PASSWORD` de la misma forma.
+Desde el IDE, se cargan en la configuración de ejecución (*Environment variables*).
 
-**Desde el IDE**
+### 5. Ejecutar
 
-- **IntelliJ IDEA:** abrir la carpeta del proyecto, ir a *Run > Edit Configurations > Environment variables* y cargar `MAIL_USERNAME=...;MAIL_PASSWORD=...`. Ejecutar la clase `EpicentroGourmetApplication`.
-- **Spring Tool Suite / Eclipse:** *File > Import > Existing Maven Projects*. En *Run Configurations > Environment* cargar las variables y ejecutar como *Spring Boot App*.
-- **Visual Studio Code:** con el Extension Pack for Java instalado, ejecutar `EpicentroGourmetApplication` y cargar las variables en la sección `env` del `launch.json` (sin subir ese archivo al repositorio).
+En la misma terminal donde se definieron las variables:
 
-La aplicación está lista cuando en la consola aparece `Started EpicentroGourmetApplication`.
+```bash
+./mvnw spring-boot:run        # Mac / Linux
+.\mvnw.cmd spring-boot:run    # Windows
+```
 
-### Paso 6: Abrir la aplicación
+También se puede ejecutar la clase `EpicentroGourmetApplication` desde el IDE. Cuando en la consola aparece `Started EpicentroGourmetApplication`, entrar a **http://localhost:8080**.
 
-Entrar a **http://localhost:8080**
+### 6. Usuarios de prueba
 
-### Paso 7: Iniciar sesión con los usuarios de prueba
-
-Los datos de prueba están en `src/main/resources/data.sql` y se cargan solos en cada arranque, sin duplicarse. Todos los usuarios tienen la contraseña **`1234`**.
+Todos tienen la contraseña **`1234`**.
 
 | Usuario | Rol | Datos |
 |---|---|---|
@@ -134,21 +105,21 @@ Los datos de prueba están en `src/main/resources/data.sql` y se cargan solos en
 | `diego` | Responsable | Puesto Desarmable "Empanadas del Norte" |
 | `valentina` | Responsable | Food Truck "Pizza Rodante" (sin conexión eléctrica) |
 | `jorge` | Responsable | Puesto Desarmable "Dulces de Campo" |
-| `lucia@epicentro.com` | Empleado (Cajero) | Trabaja hoy en La Burguesía (Primavera) |
-| `martin@epicentro.com` | Empleado (Cocinero) | Trabajó en La Burguesía y trabaja hoy en Empanadas del Norte |
-| `sofia@epicentro.com` | Empleado (Lavaplatos) | Trabaja hoy en Empanadas del Norte |
-| `tomas@epicentro.com` | Empleado (Cajero) | Trabaja hoy en Pizza Rodante |
-| `camila@epicentro.com` | Empleado (Cocinero ayudante) | Trabaja hoy en Dulces de Campo |
-| `nicolas@epicentro.com` | Empleado (Lavaplatos) | Sin festival hoy; su próximo festival es Verano |
-| `pablo@epicentro.com` | Empleado (Cajero) | Dado de baja: no puede iniciar sesión hasta que lo reactiven |
+| `lucia@epicentro.com` | Cajera | Toma pedidos en La Burguesía; tiene historial de cajas |
+| `tomas@epicentro.com` | Cajero | Toma pedidos en Pizza Rodante; tiene historial de cajas |
+| `martin@epicentro.com` | Cocinero | Trabajó en La Burguesía y hoy trabaja en Empanadas del Norte |
+| `sofia@epicentro.com` | Lavaplatos | Trabaja hoy en Empanadas del Norte |
+| `camila@epicentro.com` | Cocinera ayudante | Trabaja hoy en Dulces de Campo |
+| `nicolas@epicentro.com` | Lavaplatos | Sin festival hoy; su próximo festival es Verano |
+| `pablo@epicentro.com` | Cajero | Dado de baja: no puede iniciar sesión |
 
-Festivales cargados: Invierno (finalizado), Primavera (01/10/2026 al 30/11/2026, con 4 unidades) y Verano (próximo). Los pedidos solo se pueden cargar en un festival en curso.
+Festivales cargados: Invierno (finalizado), Primavera (en curso, del 01/10/2026 al 30/11/2026) y Verano (próximo).
 
 ## Casos de uso implementados
 
-En el repositorio también está el listado en [`docs/casos-de-uso.md`](docs/casos-de-uso.md), con las reglas de negocio de liquidación de haberes y de canon.
+El listado completo, con las reglas de negocio de liquidación de haberes y de canon, está en [`docs/casos-de-uso.md`](docs/casos-de-uso.md).
 
-Cada caso de uso se desarrolló en su rama `CU<Funcionalidad><Integrante>` y se integró a `main` por Pull Request:
+Cada caso de uso se desarrolló en su rama `CU<Funcionalidad><Integrante>` y se integró a `master` por Pull Request:
 
 | # | Caso de uso | Actor | Responsable | Pull Request |
 |---|---|---|---|---|
